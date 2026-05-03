@@ -3,6 +3,7 @@ package controllers;
 import dto.BookingGuestDTO;
 import models.*;
 import models.users.Guest;
+import models.users.Host;
 import repositories.BookingRepository;
 import repositories.GuestRepository;
 import repositories.HostRepository;
@@ -100,7 +101,8 @@ public class GuestController {
         guest.deductBalance((int) totalPrice);
         String bookingID = BookingIDGenerator.generateId(app.getDate());
         Booking booking = new Booking(bookingID, guest.getUsername(), stayName, parsedFromDate, parsedToDate, numGuests, (int) totalPrice);
-
+        bookingRepo.addBooking(booking);
+        guest.addBooking(booking);
         return "booking request created successfully. booking id: " + bookingID;
     }
 
@@ -141,6 +143,8 @@ public class GuestController {
         int refund = stay.getPolicy().calculateRefund(booking.getTotalPrice(), app.getDate(), booking.getFromDate());
         booking.setState(BookingState.CANCELLED);
         guest.addBalance(refund);
+        Host host = hostRepo.getHostByName(stay.getHostUsername());
+        host.deductBalance(refund);
 
         return "booking " +bookingID + " cancelled successfully. refund: $" + refund;
     }

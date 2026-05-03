@@ -46,7 +46,7 @@ public class ExploreController {
         List<StaySearchDTO> StaySearchesDTO = new ArrayList<>();
         List<Stay> stays = stayRepo.getStaysByCity(city);
         for (Stay stay : stays) {
-            if (stay.getCapacity() < guestsNum) continue;
+            if (stay.getCapacity() < guestsNum && !stay.isActive()) continue;
             StaySearchDTO dto = new StaySearchDTO(
                     StaySearchesDTO.size() + 1,
                     stay.getName(),
@@ -65,7 +65,7 @@ public class ExploreController {
         if (!validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
         Stay stay = stayRepo.getStayByName(name);
-        if (name == null) return null;
+        if (stay == null) return null;
 
         return new StayStatsDTO(
                 0,

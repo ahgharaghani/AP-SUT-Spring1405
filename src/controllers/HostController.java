@@ -4,6 +4,7 @@ import dto.BookingHostDTO;
 import dto.StayStatsDTO;
 import models.*;
 import models.policies.*;
+import models.users.Guest;
 import models.users.Host;
 import repositories.BookingRepository;
 import repositories.GuestRepository;
@@ -142,7 +143,7 @@ public class HostController {
         for (Stay stay : stays) {
             List<Booking> bookings = bookingRepo.getBookingsByStayName(stay.getName());
             for (Booking booking : bookings) {
-                if (booking.getState() != BookingState.CANCELLED || booking.getState() != BookingState.REJECTED) {
+                if (booking.getState() != BookingState.CANCELLED && booking.getState() != BookingState.REJECTED) {
                     BookingHostDTO dto = new BookingHostDTO(
                         bookingDTOs.size() + 1,
                         booking.getId(),
@@ -170,13 +171,15 @@ public class HostController {
         List<Booking> otherBookings = bookingRepo.getBookingsByStayName(booking.getStayName());
         for (Booking b : otherBookings) {
             if (b.getState() == BookingState.CONFIRMED &&
-                    (booking.getFromDate().isBefore(b.getToDate()) || booking.getToDate().isAfter(b.getFromDate())))
+                    (!booking.getFromDate().isBefore(b.getToDate()) && !b.getToDate().isAfter(booking.getFromDate())))
                 return "dates are not available.";
         }
 
         booking.setState(BookingState.CONFIRMED);
         /* Guest guest = guestRepo.getGuestByName(booking.getGuestUsername());
         guest.addBooking(booking); */
+        Host host = (Host) app.getLoggedInUser();
+        host.addBalance(booking.getTotalPrice());
         return "booking " + bookingID + " confirmed successfully.";
     }
 
@@ -187,6 +190,8 @@ public class HostController {
         if (booking.getState() != BookingState.REQUESTED) return "invalid booking status.";
 
         booking.setState(BookingState.REJECTED);
+        Guest guest = guestRepo.getGuestByName(booking.getGuestUsername());
+        guest.addBalance(booking.getTotalPrice());
         return "booking " + bookingID + " rejected successfully.";
     }
 }

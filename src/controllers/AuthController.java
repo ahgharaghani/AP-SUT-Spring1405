@@ -40,8 +40,6 @@ public class AuthController {
         if (!validateCurrentMenu()) return "invalid command";
         if (username.length() < 3) return "username is too short.";
         if (!Pattern.matches(USERNAME_PATTERN, username)) return "incorrect username format.";
-        if (guestRepo.getGuestByEMail(email) != null || hostRepo.getHostByEMail(email) != null)
-            return "email already exists.";
         if (!Pattern.matches(PASSWORD_PATTERN, password)) return  "incorrect password format.";
         if (!Pattern.matches(EMAIL_PATTERN, email)) return "incorrect email format.";
         if (guestRepo.getGuestByEMail(email) != null || hostRepo.getHostByEMail(email) != null)
@@ -56,8 +54,6 @@ public class AuthController {
         if (!validateCurrentMenu()) return "invalid command";
         if (username.length() < 3) return "username is too short.";
         if (!Pattern.matches(USERNAME_PATTERN, username)) return "incorrect username format.";
-        if (guestRepo.getGuestByEMail(email) != null || hostRepo.getHostByEMail(email) != null)
-            return "email already exists.";
         if (brandName.length() < 3) return "brand name is too short.";
         if (!Pattern.matches(PASSWORD_PATTERN, password)) return  "incorrect password format.";
         if (!Pattern.matches(EMAIL_PATTERN, email)) return "incorrect email format.";
