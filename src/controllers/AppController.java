@@ -1,10 +1,14 @@
 package controllers;
 
 import models.App;
+import models.Booking;
+import models.BookingState;
 import models.Menu;
+import repositories.BookingRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class AppController {
     private static AppController instance;
@@ -54,6 +58,11 @@ public class AppController {
             }
 
             app.setCurrentDate(newDate);
+            BookingRepository bookingRepo = BookingRepository.getInstance();
+            List<Booking> bookings = bookingRepo.getAllBookings();
+            for (Booking booking : bookings) {
+                if (app.getDate().isAfter(booking.getToDate())) booking.setState(BookingState.COMPLETED);
+            }
             return "current date is now " + dateString;
         } catch (Exception e) {
             return "invalid date format.";
