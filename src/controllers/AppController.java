@@ -35,8 +35,8 @@ public class AppController {
     public String changeMenu(String menuName) {
         Menu menu = Menu.fromString(menuName);
         if (menu == null) return "404 page not found.";
-        if (menu == Menu.HOST && app.isHost()) return "you need to login as a host before accessing the host menu.";
-        if (menu == Menu.GUEST && app.isGuest()) return "you need to login as a guest before accessing the guest menu.";
+        if (menu == Menu.HOST && !app.isHost()) return "you need to login as a host before accessing the host menu.";
+        if (menu == Menu.GUEST && !app.isGuest()) return "you need to login as a guest before accessing the guest menu.";
         app.setCurrentMenu(menu);
         return "changed menu to: " + menu.getDisplayName();
     }
