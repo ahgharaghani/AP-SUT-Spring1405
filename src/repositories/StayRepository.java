@@ -4,6 +4,7 @@ import models.Stay;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StayRepository {
     private static StayRepository instance;
@@ -32,5 +33,11 @@ public class StayRepository {
                 .filter(stay -> stay.getName().equals(name))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public List<Stay> getStaysByCity(String city) {
+        return stays.stream()
+                .filter(stay -> stay.getCity().equals(city))
+                .collect(Collectors.toList());
     }
 }
