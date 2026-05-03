@@ -1,14 +1,12 @@
 package controllers;
 
 import dto.BookingHostDTO;
-import dto.StayDTO;
+import dto.StayStatsDTO;
 import models.*;
 import models.policies.*;
-import models.users.Guest;
 import models.users.Host;
 import repositories.BookingRepository;
 import repositories.GuestRepository;
-import repositories.HostRepository;
 import repositories.StayRepository;
 
 import java.util.ArrayList;
@@ -84,19 +82,19 @@ public class HostController {
         return "stay \"" + name + "\" added successfully.";
     }
 
-    public List<StayDTO> getCurrentHostStays() {
+    public List<StayStatsDTO> getCurrentHostStays() {
         if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
         Host host = (Host) app.getLoggedInUser();
         List<Stay> stays = host.getStays();
         if (stays.isEmpty()) return null;
-        List<StayDTO> stayDTOs = new ArrayList<>();
+        List<StayStatsDTO> stayDTOs = new ArrayList<>();
 
         for (Stay stay : stays) {
             String status = stay.isActive() ? "active" : "inactive";
             String policyName = stay.getPolicy().getPolicyName();
 
-            StayDTO dto = new StayDTO(
+            StayStatsDTO dto = new StayStatsDTO(
                     stayDTOs.size() + 1,
                     stay.getName(),
                     stay.getCity(),

@@ -1,6 +1,6 @@
 package dto;
 
-public class StayDTO {
+public class StayStatsDTO {
     public int id;
     public String name;
     public String city;
@@ -10,7 +10,7 @@ public class StayDTO {
     public String policy;
     public String status;
 
-    public StayDTO(int id, String name, String city, String address, int cap, int ppn, String policy, String status) {
+    public StayStatsDTO(int id, String name, String city, String address, int cap, int ppn, String policy, String status) {
         this.id = id;
         this.name = name;
         this.city = city;
