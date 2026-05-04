@@ -1,7 +1,5 @@
 package models;
 
-import models.policies.CancellationPolicy;
-
 import java.util.ArrayList;
 import java.util.List;
 

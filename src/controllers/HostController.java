@@ -3,7 +3,6 @@ package controllers;
 import dto.BookingHostDTO;
 import dto.StayStatsDTO;
 import models.*;
-import models.policies.*;
 import models.users.Guest;
 import models.users.Host;
 import repositories.BookingRepository;
@@ -70,9 +69,9 @@ public class HostController {
         }
 
         CancellationPolicy policy;
-        if (policyStr.equals("flexible")) policy = new FlexiblePolicy();
-        else if (policyStr.equals("moderate")) policy = new ModeratePolicy();
-        else if (policyStr.equals("strict")) policy = new StrictPolicy();
+        if (policyStr.equals("flexible")) policy = CancellationPolicy.FLEXIBLE;
+        else if (policyStr.equals("moderate")) policy = CancellationPolicy.MODERATE;
+        else if (policyStr.equals("strict")) policy = CancellationPolicy.STRICT;
         else return "invalid cancellation policy.";
 
         Host host = (Host) app.getLoggedInUser();
