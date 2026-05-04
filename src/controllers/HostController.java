@@ -122,7 +122,7 @@ public class HostController {
         for (Stay stay : stays) {
             List<Booking> bookings = Repository.getBookingsByStayName(stay.getName());
             for (Booking booking : bookings) {
-                if (booking.getState() != BookingState.CANCELLED && booking.getState() != BookingState.REJECTED) {
+                if (booking.getState() == BookingState.REQUESTED) {
                     BookingHostDTO dto = new BookingHostDTO(
                         bookingDTOs.size() + 1,
                         booking.getId(),
