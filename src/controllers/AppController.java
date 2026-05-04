@@ -32,7 +32,7 @@ public class AppController {
                 return "invalid date format.";
             }
 
-            if (newDate.isBefore(App.getDate())) {
+            if (App.getDate() != null && newDate.isBefore(App.getDate())) {
                 return "cannot set date to the past.";
             }
 

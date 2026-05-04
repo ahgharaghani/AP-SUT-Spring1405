@@ -6,7 +6,7 @@ import models.users.User;
 import java.time.LocalDate;
 
 public class App {
-    private static LocalDate currentDate = LocalDate.now();
+    private static LocalDate currentDate = null;
     private static Menu currentMenu = Menu.MAIN;
     private static User loggedInUser = null;
 
