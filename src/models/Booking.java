@@ -1,5 +1,7 @@
 package models;
 
+import models.enums.BookingState;
+
 import java.time.LocalDate;
 
 public class Booking {

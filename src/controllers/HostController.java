@@ -3,6 +3,9 @@ package controllers;
 import dto.BookingHostDTO;
 import dto.StayStatsDTO;
 import models.*;
+import models.enums.BookingState;
+import models.enums.CancellationPolicy;
+import models.enums.Menu;
 import models.users.Guest;
 import models.users.Host;
 

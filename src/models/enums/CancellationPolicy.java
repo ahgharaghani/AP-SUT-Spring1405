@@ -1,4 +1,4 @@
-package models;
+package models.enums;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;

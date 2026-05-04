@@ -1,7 +1,7 @@
 package controllers;
 
 import models.App;
-import models.Menu;
+import models.enums.Menu;
 import models.Repository;
 import models.users.Guest;
 import models.users.Host;

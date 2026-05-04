@@ -2,6 +2,8 @@ package controllers;
 
 import dto.BookingGuestDTO;
 import models.*;
+import models.enums.BookingState;
+import models.enums.Menu;
 import models.users.Guest;
 import models.users.Host;
 import utils.BookingIDGenerator;

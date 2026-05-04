@@ -1,13 +1,14 @@
 package models;
 
+import models.enums.Menu;
 import models.users.User;
 
 import java.time.LocalDate;
 
 public class App {
-    private static LocalDate currentDate;
-    private static Menu currentMenu;
-    private static User loggedInUser;
+    private static LocalDate currentDate = LocalDate.now();
+    private static Menu currentMenu = Menu.MAIN;
+    private static User loggedInUser = null;
 
     public static Menu getCurrentMenu() {
         return currentMenu;

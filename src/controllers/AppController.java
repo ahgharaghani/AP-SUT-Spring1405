@@ -1,6 +1,8 @@
 package controllers;
 
 import models.*;
+import models.enums.BookingState;
+import models.enums.Menu;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,8 +20,8 @@ public class AppController {
         return "changed menu to: " + menu.getDisplayName();
     }
 
-    public static String showCurrentMenu() {
-        return "current menu: " + App.getCurrentMenu().getDisplayName();
+    public static String getCurrentMenu() {
+        return App.getCurrentMenu().getDisplayName();
     }
 
     public static String setSystemDate(String dateString) {

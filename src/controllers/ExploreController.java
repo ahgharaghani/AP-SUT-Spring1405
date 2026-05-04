@@ -3,7 +3,7 @@ package controllers;
 import dto.StaySearchDTO;
 import dto.StayStatsDTO;
 import models.App;
-import models.Menu;
+import models.enums.Menu;
 import models.Repository;
 import models.Stay;
 

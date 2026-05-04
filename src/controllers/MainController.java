@@ -1,7 +1,7 @@
 package controllers;
 
 import models.App;
-import models.Menu;
+import models.enums.Menu;
 
 public class MainController {
     public static String quitApp() {
