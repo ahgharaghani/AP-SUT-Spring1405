@@ -5,57 +5,43 @@ import models.users.User;
 import java.time.LocalDate;
 
 public class App {
-    private static App instance;
-    private LocalDate currentDate;
-    private Menu currentMenu;
-    private User loggedInUser;
+    private static LocalDate currentDate;
+    private static Menu currentMenu;
+    private static User loggedInUser;
 
-    private App() {
-        this.currentMenu = Menu.MAIN;
-        this.loggedInUser = null;
-        this.currentDate = LocalDate.now();
-    }
-
-    public static App getInstance() {
-        if (instance == null) {
-            instance = new App();
-        }
-        return instance;
-    }
-
-    public Menu getCurrentMenu() {
+    public static Menu getCurrentMenu() {
         return currentMenu;
     }
 
-    public void setCurrentMenu(Menu menu) {
-        this.currentMenu = menu;
+    public static void setCurrentMenu(Menu menu) {
+        currentMenu = menu;
     }
 
-    public User getLoggedInUser() {
+    public static User getLoggedInUser() {
         return loggedInUser;
     }
 
-    public void setLoggedInUser(User user) {
-        this.loggedInUser = user;
+    public static void setLoggedInUser(User user) {
+        loggedInUser = user;
     }
 
-    public void setCurrentDate(LocalDate newDate) {
-        this.currentDate = newDate;
+    public static void setCurrentDate(LocalDate newDate) {
+        currentDate = newDate;
     }
 
-    public LocalDate getDate() {
+    public static LocalDate getDate() {
         return currentDate;
     }
 
-    public boolean isLoggedIn() {
+    public static boolean isLoggedIn() {
         return loggedInUser != null;
     }
 
-    public boolean isGuest() {
+    public static boolean isGuest() {
         return loggedInUser != null && loggedInUser.getRole().equals("guest");
     }
 
-    public boolean isHost() {
+    public static boolean isHost() {
         return loggedInUser != null && loggedInUser.getRole().equals("host");
     }
 }

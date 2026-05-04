@@ -5,48 +5,28 @@ import dto.StayStatsDTO;
 import models.*;
 import models.users.Guest;
 import models.users.Host;
-import repositories.BookingRepository;
-import repositories.GuestRepository;
-import repositories.StayRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HostController {
-    private static HostController instance;
-    private GuestRepository guestRepo;
-    private StayRepository stayRepo;
-    private BookingRepository bookingRepo;
-    private final App app;
 
-    private HostController() {
-        this.app = App.getInstance();
-        this.guestRepo = GuestRepository.getInstance();
-        this.stayRepo = StayRepository.getInstance();
-        this.bookingRepo = BookingRepository.getInstance();
+    private static boolean validateCurrentMenu() {
+        return App.getCurrentMenu() == Menu.HOST;
     }
 
-    public static HostController getInstance() {
-        if (instance == null) instance = new HostController();
-        return instance;
-    }
+    public static String getBalance() {
+        if (!App.isLoggedIn() || !App.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-    private boolean validateCurrentMenu() {
-        return app.getCurrentMenu() == Menu.HOST;
-    }
-
-    public String getBalance() {
-        if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
-
-        Host host = (Host) app.getLoggedInUser();
+        Host host = (Host) App.getLoggedInUser();
         return "your balance: $" + host.getBalance();
     }
 
-    public String addStay(String name, String city, String address, String capStr, String ppnStr, String policyStr) {
-        if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static String addStay(String name, String city, String address, String capStr, String ppnStr, String policyStr) {
+        if (!App.isLoggedIn() || !App.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
         if (name.length() < 3) return "stay name is too short.";
-        if (stayRepo.getStayByName(name) != null) return "stay name already exists.";
+        if (Repository.getStayByName(name) != null) return "stay name already exists.";
 
         int capacity;
         try {
@@ -74,18 +54,18 @@ public class HostController {
         else if (policyStr.equals("strict")) policy = CancellationPolicy.STRICT;
         else return "invalid cancellation policy.";
 
-        Host host = (Host) app.getLoggedInUser();
+        Host host = (Host) App.getLoggedInUser();
         Stay stay = new Stay(name, city, address, capacity, ppn, policy, host.getUsername());
         host.addStay(stay);
-        stayRepo.addStay(stay);
+        Repository.addStay(stay);
 
         return "stay \"" + name + "\" added successfully.";
     }
 
-    public List<StayStatsDTO> getCurrentHostStays() {
-        if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static List<StayStatsDTO> getCurrentHostStays() {
+        if (!App.isLoggedIn() || !App.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Host host = (Host) app.getLoggedInUser();
+        Host host = (Host) App.getLoggedInUser();
         List<Stay> stays = host.getStays();
         if (stays.isEmpty()) return null;
         List<StayStatsDTO> stayDTOs = new ArrayList<>();
@@ -110,37 +90,37 @@ public class HostController {
         return stayDTOs;
     }
 
-    public String deactivateStay(String name) {
-        if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static String deactivateStay(String name) {
+        if (!App.isLoggedIn() || !App.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Stay stay = stayRepo.getStayByName(name);
+        Stay stay = Repository.getStayByName(name);
         if (stay == null) return "stay not found.";
         if (!stay.isActive()) return "stay is already inactive.";
 
         stay.setActive(false); return "stay \"" + stay.getName() + "\" updated successfully.";
     }
 
-    public String activateStay(String name) {
-        if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static String activateStay(String name) {
+        if (!App.isLoggedIn() || !App.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Stay stay = stayRepo.getStayByName(name);
+        Stay stay = Repository.getStayByName(name);
         if (stay == null) return "stay not found.";
         if (stay.isActive()) return "stay is already active.";
 
         stay.setActive(true); return "stay \"" + stay.getName() + "\" updated successfully.";
     }
 
-    public List<BookingHostDTO> listBookingReqs() {
-        if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static List<BookingHostDTO> listBookingReqs() {
+        if (!App.isLoggedIn() || !App.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Host host = (Host) app.getLoggedInUser();
+        Host host = (Host) App.getLoggedInUser();
         List<Stay> stays = host.getStays();
         List<BookingHostDTO> bookingDTOs = new ArrayList<>();
 
         if (stays.isEmpty()) return null;
 
         for (Stay stay : stays) {
-            List<Booking> bookings = bookingRepo.getBookingsByStayName(stay.getName());
+            List<Booking> bookings = Repository.getBookingsByStayName(stay.getName());
             for (Booking booking : bookings) {
                 if (booking.getState() != BookingState.CANCELLED && booking.getState() != BookingState.REJECTED) {
                     BookingHostDTO dto = new BookingHostDTO(
@@ -160,14 +140,14 @@ public class HostController {
         return bookingDTOs;
     }
 
-    public String approveBooking(String bookingID) {
-        if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static String approveBooking(String bookingID) {
+        if (!App.isLoggedIn() || !App.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Booking booking = bookingRepo.getBookingByID(bookingID);
+        Booking booking = Repository.getBookingByID(bookingID);
         if (booking == null) return "booking not found.";
         if (booking.getState() != BookingState.REQUESTED) return "invalid booking status.";
 
-        List<Booking> otherBookings = bookingRepo.getBookingsByStayName(booking.getStayName());
+        List<Booking> otherBookings = Repository.getBookingsByStayName(booking.getStayName());
         for (Booking b : otherBookings) {
             if (b.getState() == BookingState.CONFIRMED &&
                     (!booking.getFromDate().isBefore(b.getToDate()) && !b.getToDate().isAfter(booking.getFromDate())))
@@ -177,19 +157,19 @@ public class HostController {
         booking.setState(BookingState.CONFIRMED);
         /* Guest guest = guestRepo.getGuestByName(booking.getGuestUsername());
         guest.addBooking(booking); */
-        Host host = (Host) app.getLoggedInUser();
+        Host host = (Host) App.getLoggedInUser();
         host.addBalance(booking.getTotalPrice());
         return "booking " + bookingID + " confirmed successfully.";
     }
 
-    public String rejectBooking(String bookingID) {
-        if (!app.isLoggedIn() || !app.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
-        Booking booking = bookingRepo.getBookingByID(bookingID);
+    public static String rejectBooking(String bookingID) {
+        if (!App.isLoggedIn() || !App.isHost() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+        Booking booking = Repository.getBookingByID(bookingID);
         if (booking == null) return "booking not found.";
         if (booking.getState() != BookingState.REQUESTED) return "invalid booking status.";
 
         booking.setState(BookingState.REJECTED);
-        Guest guest = guestRepo.getGuestByName(booking.getGuestUsername());
+        Guest guest = Repository.getGuestByName(booking.getGuestUsername());
         guest.addBalance(booking.getTotalPrice());
         return "booking " + bookingID + " rejected successfully.";
     }

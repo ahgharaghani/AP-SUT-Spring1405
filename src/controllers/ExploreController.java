@@ -4,35 +4,20 @@ import dto.StaySearchDTO;
 import dto.StayStatsDTO;
 import models.App;
 import models.Menu;
+import models.Repository;
 import models.Stay;
-import repositories.HostRepository;
-import repositories.StayRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExploreController {
     private static ExploreController instance;
-    private HostRepository hostRepo;
-    private StayRepository stayRepo;
-    private App app;
 
-    private ExploreController() {
-        this.app = App.getInstance();
-        this.hostRepo = HostRepository.getInstance();
-        this.stayRepo = StayRepository.getInstance();
+    private static boolean validateCurrentMenu() {
+        return App.getCurrentMenu() == Menu.EXPLORE;
     }
 
-    public static ExploreController getInstance() {
-        if (instance == null) instance = new ExploreController();
-        return instance;
-    }
-
-    private boolean validateCurrentMenu() {
-        return app.getCurrentMenu() == Menu.EXPLORE;
-    }
-
-    public List<StaySearchDTO> searchStays(String city, String guestsNumStr) {
+    public static List<StaySearchDTO> searchStays(String city, String guestsNumStr) {
         if (!validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
         int guestsNum;
@@ -44,14 +29,14 @@ public class ExploreController {
         }
 
         List<StaySearchDTO> StaySearchesDTO = new ArrayList<>();
-        List<Stay> stays = stayRepo.getStaysByCity(city);
+        List<Stay> stays = Repository.getStaysByCity(city);
         for (Stay stay : stays) {
             if (stay.getCapacity() < guestsNum && !stay.isActive()) continue;
             StaySearchDTO dto = new StaySearchDTO(
                     StaySearchesDTO.size() + 1,
                     stay.getName(),
                     stay.getPricePerNight(),
-                    hostRepo.getHostByName(stay.getHostUsername()).getBrand()
+                    Repository.getHostByName(stay.getHostUsername()).getBrand()
             );
             StaySearchesDTO.add(dto);
         }
@@ -61,10 +46,10 @@ public class ExploreController {
         return StaySearchesDTO;
     }
 
-    public StayStatsDTO showStayStats(String name) {
+    public static StayStatsDTO showStayStats(String name) {
         if (!validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Stay stay = stayRepo.getStayByName(name);
+        Stay stay = Repository.getStayByName(name);
         if (stay == null) return null;
 
         return new StayStatsDTO(

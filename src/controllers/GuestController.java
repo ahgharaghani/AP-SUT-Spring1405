@@ -4,10 +4,6 @@ import dto.BookingGuestDTO;
 import models.*;
 import models.users.Guest;
 import models.users.Host;
-import repositories.BookingRepository;
-import repositories.GuestRepository;
-import repositories.HostRepository;
-import repositories.StayRepository;
 import utils.BookingIDGenerator;
 
 import java.time.LocalDate;
@@ -17,42 +13,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuestController {
-    private static GuestController instance;
-    private HostRepository hostRepo;
-    private GuestRepository guestRepo;
-    private StayRepository stayRepo;
-    private BookingRepository bookingRepo;
-
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
-    private final App app;
-
-    private GuestController() {
-        this.app = App.getInstance();
-        this.hostRepo = HostRepository.getInstance();
-        this.guestRepo = GuestRepository.getInstance();
-        this.stayRepo = StayRepository.getInstance();
-        this.bookingRepo = BookingRepository.getInstance();
+    private static boolean validateCurrentMenu() {
+        return App.getCurrentMenu() == Menu.GUEST;
     }
 
-    public static GuestController getInstance() {
-        if (instance == null) instance = new GuestController();
-        return instance;
-    }
+    public static String getBalance() {
+        if (!App.isLoggedIn() || !App.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");;
 
-    private boolean validateCurrentMenu() {
-        return app.getCurrentMenu() == Menu.GUEST;
-    }
-
-    public String getBalance() {
-        if (!app.isLoggedIn() || !app.isGuest() || !validateCurrentMenu())throw new UnsupportedOperationException("invalid command");;
-
-        Guest guest = (Guest) app.getLoggedInUser();
+        Guest guest = (Guest) App.getLoggedInUser();
         return "your balance: $" + guest.getBalance();
     }
 
-    public String chargeAccount(String amountStr) {
-        if (!app.isLoggedIn() || !app.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");;
+    public static String chargeAccount(String amountStr) {
+        if (!App.isLoggedIn() || !App.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");;
 
         int amount;
         try {
@@ -64,17 +39,17 @@ public class GuestController {
             return "Amount must be greater than 0.";
         }
 
-        Guest currentUser = (Guest) app.getLoggedInUser();
+        Guest currentUser = (Guest) App.getLoggedInUser();
         currentUser.addBalance(amount);
         return "Account charged successfully. Current balance: $" + currentUser.getBalance();
     }
 
-    public String requestBooking(String stayName, String fromDate, String toDate, String numGuestsStr) {
-        if (!app.isLoggedIn() || !app.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static String requestBooking(String stayName, String fromDate, String toDate, String numGuestsStr) {
+        if (!App.isLoggedIn() || !App.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Guest guest = (Guest) app.getLoggedInUser();
+        Guest guest = (Guest) App.getLoggedInUser();
 
-        Stay stay = stayRepo.getStayByName(stayName);
+        Stay stay = Repository.getStayByName(stayName);
         if (stay == null) return "stay not found.";
         if (!stay.isActive()) return "stay is not available.";
 
@@ -99,17 +74,17 @@ public class GuestController {
         if (guest.getBalance() < totalPrice) return "not enough balance.";
 
         guest.deductBalance((int) totalPrice);
-        String bookingID = BookingIDGenerator.generateId(app.getDate());
+        String bookingID = BookingIDGenerator.generateId(App.getDate());
         Booking booking = new Booking(bookingID, guest.getUsername(), stayName, parsedFromDate, parsedToDate, numGuests, (int) totalPrice);
-        bookingRepo.addBooking(booking);
+        Repository.addBooking(booking);
         guest.addBooking(booking);
         return "booking request created successfully. booking id: " + bookingID;
     }
 
-    public List<BookingGuestDTO> listGuestBookings() {
-        if (!app.isLoggedIn() || !app.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static List<BookingGuestDTO> listGuestBookings() {
+        if (!App.isLoggedIn() || !App.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Guest guest = (Guest) app.getLoggedInUser();
+        Guest guest = (Guest) App.getLoggedInUser();
         List<Booking> bookings = guest.getBookings();
         List<BookingGuestDTO> bookingDTOs = new ArrayList<>();
 
@@ -128,22 +103,22 @@ public class GuestController {
         return bookingDTOs;
     }
 
-    public String cancelBooking(String bookingID) {
-        if (!app.isLoggedIn() || !app.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
+    public static String cancelBooking(String bookingID) {
+        if (!App.isLoggedIn() || !App.isGuest() || !validateCurrentMenu()) throw new UnsupportedOperationException("invalid command");
 
-        Guest guest = (Guest) app.getLoggedInUser();
-        Booking booking = bookingRepo.getBookingByID(bookingID);
+        Guest guest = (Guest) App.getLoggedInUser();
+        Booking booking = Repository.getBookingByID(bookingID);
         if (booking == null) return "booking not found.";
 
         if (booking.getState() != BookingState.CONFIRMED) return "cannot cancel a booking that is not confirmed.";
 
-        if (app.getDate().isAfter(booking.getToDate())) return "cannot cancel a booking that has already passed.";
+        if (App.getDate().isAfter(booking.getToDate())) return "cannot cancel a booking that has already passed.";
 
-        Stay stay = stayRepo.getStayByName(booking.getStayName());
-        int refund = stay.getPolicy().calculateRefund(booking.getTotalPrice(), app.getDate(), booking.getFromDate());
+        Stay stay = Repository.getStayByName(booking.getStayName());
+        int refund = stay.getPolicy().calculateRefund(booking.getTotalPrice(), App.getDate(), booking.getFromDate());
         booking.setState(BookingState.CANCELLED);
         guest.addBalance(refund);
-        Host host = hostRepo.getHostByName(stay.getHostUsername());
+        Host host = Repository.getHostByName(stay.getHostUsername());
         host.deductBalance(refund);
 
         return "booking " +bookingID + " cancelled successfully. refund: $" + refund;

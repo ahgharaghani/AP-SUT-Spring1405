@@ -1,51 +1,28 @@
 package controllers;
 
-import models.App;
-import models.Booking;
-import models.BookingState;
-import models.Menu;
-import repositories.BookingRepository;
+import models.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class AppController {
-    private static AppController instance;
-
-//    private static AuthController authController;
-//    private static ExploreController exploreController;
-//    private static GuestController guestController;
-//    private static HostController hostController;
-//    private static MainController mainController;
-
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
-    private static App app;
-
-    private AppController() {
-        app = App.getInstance();
-    }
-
-    public static AppController getInstance() {
-        if (instance == null) instance = new AppController();
-        return instance;
-    }
-
-    public String changeMenu(String menuName) {
+    public static String changeMenu(String menuName) {
         Menu menu = Menu.fromString(menuName);
         if (menu == null) return "404 page not found.";
-        if (menu == Menu.HOST && !app.isHost()) return "you need to login as a host before accessing the host menu.";
-        if (menu == Menu.GUEST && !app.isGuest()) return "you need to login as a guest before accessing the guest menu.";
-        app.setCurrentMenu(menu);
+        if (menu == Menu.HOST && !App.isHost()) return "you need to login as a host before accessing the host menu.";
+        if (menu == Menu.GUEST && !App.isGuest()) return "you need to login as a guest before accessing the guest menu.";
+        App.setCurrentMenu(menu);
         return "changed menu to: " + menu.getDisplayName();
     }
 
-    public String showCurrentMenu() {
-        return "current menu: " + app.getCurrentMenu().getDisplayName();
+    public static String showCurrentMenu() {
+        return "current menu: " + App.getCurrentMenu().getDisplayName();
     }
 
-    public String setSystemDate(String dateString) {
+    public static String setSystemDate(String dateString) {
         try {
             LocalDate newDate = LocalDate.parse(dateString, FORMATTER);
 
@@ -53,15 +30,14 @@ public class AppController {
                 return "invalid date format.";
             }
 
-            if (newDate.isBefore(app.getDate())) {
+            if (newDate.isBefore(App.getDate())) {
                 return "cannot set date to the past.";
             }
 
-            app.setCurrentDate(newDate);
-            BookingRepository bookingRepo = BookingRepository.getInstance();
-            List<Booking> bookings = bookingRepo.getAllBookings();
+            App.setCurrentDate(newDate);
+            List<Booking> bookings = Repository.getAllBookings();
             for (Booking booking : bookings) {
-                if (app.getDate().isAfter(booking.getToDate())) booking.setState(BookingState.COMPLETED);
+                if (App.getDate().isAfter(booking.getToDate())) booking.setState(BookingState.COMPLETED);
             }
             return "current date is now " + dateString;
         } catch (Exception e) {
