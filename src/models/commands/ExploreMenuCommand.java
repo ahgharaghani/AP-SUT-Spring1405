@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum ExploreMenuCommand implements Command {
-    SEARCH_STAYS("search stays", "^search stays\\s+-city\\s+\"([^\"]+)\"\\s+-guests\\s+(\\S+)$") {
+    SEARCH_STAYS("search stays", "^\\s*search\\s+stays\\s+-city\\s+\"([^\"]+)\"\\s+-guests\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -15,11 +15,11 @@ public enum ExploreMenuCommand implements Command {
             return params;
         }
     },
-    SHOW_STAY("show stay", "^show stay\\s+-name\\s+(.+)$") {
+    SHOW_STAY("show stay", "\\s*show\\s+stay\\s+-name\\s+\"([^\"]+)\"\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
-            params.put("stay name", matcher.group(1).trim());
+            params.put("stay name", matcher.group(1));
             return params;
         }
     };

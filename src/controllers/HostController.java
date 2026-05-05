@@ -8,6 +8,7 @@ import models.enums.CancellationPolicy;
 import models.enums.Menu;
 import models.users.Guest;
 import models.users.Host;
+import utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class HostController {
         else return "invalid cancellation policy.";
 
         Host host = (Host) App.getLoggedInUser();
-        Stay stay = new Stay(name, city, address, capacity, ppn, policy, host.getUsername());
+        Stay stay = new Stay(name, city, address, capacity, ppn, policy, host.getUsername(), host.getBrand());
         host.addStay(stay);
         Repository.addStay(stay);
 
@@ -85,6 +86,7 @@ public class HostController {
                     stay.getCapacity(),
                     stay.getPricePerNight(),
                     policyName,
+                    stay.getBrand(),
                     status
             );
             stayDTOs.add(dto);
@@ -131,8 +133,8 @@ public class HostController {
                         booking.getId(),
                         booking.getStayName(),
                         booking.getGuestUsername(),
-                        booking.getFromDate().toString(),
-                        booking.getToDate().toString(),
+                        booking.getFromDate().format(DateUtils.formatter),
+                        booking.getToDate().format(DateUtils.formatter),
                         booking.getNumberOfGuests()
                     );
                     bookingDTOs.add(dto);
@@ -153,7 +155,7 @@ public class HostController {
         List<Booking> otherBookings = Repository.getBookingsByStayName(booking.getStayName());
         for (Booking b : otherBookings) {
             if (b.getState() == BookingState.CONFIRMED &&
-                    (!booking.getFromDate().isBefore(b.getToDate()) && !b.getToDate().isAfter(booking.getFromDate())))
+                    (booking.getFromDate().isBefore(b.getToDate()) && b.getToDate().isAfter(booking.getFromDate())))
                 return "dates are not available.";
         }
 

@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum MainMenuCommand implements Command {
-    QUIT("quit", "^quit$") {
+    QUIT("quit", "^\\s*quit\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             return new HashMap<>();

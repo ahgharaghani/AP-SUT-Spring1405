@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum GlobalCommand implements Command {
-    CHANGE_MENU("change menu", "^change menu:\\s*(.+)$") {
+    CHANGE_MENU("change menu", "^\\s*change\\s+menu\\s*:\\s+(.+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -14,13 +14,13 @@ public enum GlobalCommand implements Command {
             return params;
         }
     },
-    SHOW_CURRENT_MENU("show current menu", "^show current menu$") {
+    SHOW_CURRENT_MENU("show current menu", "^\\s*show\\s+current\\s+menu\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             return new HashMap<>();
         }
     },
-    TIME_SET("time set", "^time set\\s+-d\\s+(.+)$") {
+    TIME_SET("time set", "^\\s*time\\s+set\\s+-d\\s+(.+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();

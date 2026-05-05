@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum AuthMenuCommand implements Command {
-    CREATE_GUEST("create guest", "^create guest\\s+-u\\s+(\\S+)\\s+-p\\s+(\\S+)\\s+-e\\s+(\\S+)$") {
+    CREATE_GUEST("create guest", "^\\s*create\\s+guest\\s+-u\\s+(\\S+)\\s+-p\\s+(\\S+)\\s+-e\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -16,7 +16,7 @@ public enum AuthMenuCommand implements Command {
             return params;
         }
     },
-    CREATE_HOST("create host", "^create host\\s+-u\\s+(\\S+)\\s+-b\\s+\"([^\"]+)\"\\s+-p\\s+(\\S+)\\s+-e\\s+(\\S+)$") {
+    CREATE_HOST("create host", "^\\s*create\\s+host\\s+-u\\s+(\\S+)\\s+-b\\s+\"([^\"]+)\"\\s+-p\\s+(\\S+)\\s+-e\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -27,7 +27,7 @@ public enum AuthMenuCommand implements Command {
             return params;
         }
     },
-    LOGIN_GUEST("login guest", "^login as guest\\s+-u\\s+(\\S+)\\s+-p\\s+(\\S+)$") {
+    LOGIN_GUEST("login guest", "^\\s*login\\s+as\\s+guest\\s+-u\\s+(\\S+)\\s+-p\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -36,7 +36,7 @@ public enum AuthMenuCommand implements Command {
             return params;
         }
     },
-    LOGIN_HOST("login host", "^login as host\\s+-u\\s+(\\S+)\\s+-p\\s+(\\S+)$") {
+    LOGIN_HOST("login host", "^\\s*login\\s+as\\s+host\\s+-u\\s+(\\S+)\\s+-p\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -45,13 +45,13 @@ public enum AuthMenuCommand implements Command {
             return params;
         }
     },
-    LOGOUT("logout", "^logout$") {
+    LOGOUT("logout", "^\\s*logout\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             return new HashMap<>();
         }
     },
-    FORGOT_PASSWORD_GUEST("forgot password guest", "^forgot password guest\\s+-u\\s+(\\S+)\\s+-e\\s+(\\S+)$") {
+    FORGOT_PASSWORD_GUEST("forgot password guest", "^\\s*forgot\\s+password\\s+guest\\s+-u\\s+(\\S+)\\s+-e\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -60,7 +60,7 @@ public enum AuthMenuCommand implements Command {
             return params;
         }
     },
-    FORGOT_PASSWORD_HOST("forgot password host", "^forgot password host\\s+-u\\s+(\\S+)\\s+-e\\s+(\\S+)$") {
+    FORGOT_PASSWORD_HOST("forgot password host", "^\\s*forgot\\s+password\\s+host\\s+-u\\s+(\\S+)\\s+-e\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();

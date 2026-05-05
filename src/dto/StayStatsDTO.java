@@ -8,9 +8,10 @@ public class StayStatsDTO {
     public int cap;
     public int ppn;
     public String policy;
+    public String brand;
     public String status;
 
-    public StayStatsDTO(int id, String name, String city, String address, int cap, int ppn, String policy, String status) {
+    public StayStatsDTO(int id, String name, String city, String address, int cap, int ppn, String policy, String brand, String status) {
         this.id = id;
         this.name = name;
         this.city = city;
@@ -18,6 +19,7 @@ public class StayStatsDTO {
         this.cap = cap;
         this.ppn = ppn;
         this.policy = policy;
+        this.brand = brand;
         this.status = status;
     }
 }

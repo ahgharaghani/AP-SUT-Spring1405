@@ -26,7 +26,6 @@ public class Booking {
         this.totalPrice = totalPrice;
     }
 
-    // Getters & Setters
     public String getId() { return id; }
     public String getGuestUsername() { return guestUsername; }
     public String getStayName() { return stayName; }

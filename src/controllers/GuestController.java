@@ -7,10 +7,11 @@ import models.enums.Menu;
 import models.users.Guest;
 import models.users.Host;
 import utils.BookingIDGenerator;
+import utils.DateUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +56,14 @@ public class GuestController {
         if (stay == null) return "stay not found.";
         if (!stay.isActive()) return "stay is not available.";
 
-        LocalDate parsedFromDate = LocalDate.parse(fromDate, FORMATTER);
-        LocalDate parsedToDate = LocalDate.parse(toDate, FORMATTER);
-        if (parsedFromDate.isAfter(parsedToDate)) return "invalid date range.";
+        LocalDate parsedFromDate, parsedToDate;
+        try {
+            parsedFromDate = LocalDate.parse(fromDate, FORMATTER);
+            parsedToDate = LocalDate.parse(toDate, FORMATTER);
+        } catch (DateTimeParseException e) {
+            return "invalid date format.";
+        }
+        if (!parsedFromDate.isBefore(parsedToDate)) return "invalid date range.";
 
         int numGuests;
         try {
@@ -71,7 +77,7 @@ public class GuestController {
 
         if (numGuests > stay.getCapacity()) return "not enough capacity.";
 
-        long totalPrice = ChronoUnit.DAYS.between(parsedFromDate, parsedToDate) * stay.getPricePerNight();
+        long totalPrice = DateUtils.daysUntil30DayDates(parsedFromDate, parsedToDate) * stay.getPricePerNight();
 
         if (guest.getBalance() < totalPrice) return "not enough balance.";
 

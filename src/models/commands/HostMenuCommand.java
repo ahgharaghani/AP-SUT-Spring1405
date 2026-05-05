@@ -6,13 +6,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum HostMenuCommand implements Command {
-    SHOW_BALANCE("show balance", "^show balance$") {
+    SHOW_BALANCE("show balance", "^\\s*show\\s+balance\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             return new HashMap<>();
         }
     },
-    ADD_STAY("add stay", "^add stay\\s+-name\\s+\"([^\"]+)\"\\s+-city\\s+\"([^\"]+)\"\\s+-addr\\s+\"([^\"]+)\"\\s+-cap\\s+(\\S+)\\s+-ppn\\s+(\\S+)\\s+-cp\\s+(\\S+)$") {
+    ADD_STAY("add stay", "^\\s*add\\s+stay\\s+-name\\s+\"([^\"]+)\"\\s+-city\\s+\"([^\"]+)\"\\s+-addr\\s+\"([^\"]+)\"\\s+-cap\\s+(\\S+)\\s+-ppn\\s+(\\S+)\\s+-cp\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -25,13 +25,13 @@ public enum HostMenuCommand implements Command {
             return params;
         }
     },
-    LIST_MY_STAYS("list my stays", "^list my stays$") {
+    LIST_MY_STAYS("list my stays", "^\\s*list\\s+my\\s+stays\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             return new HashMap<>();
         }
     },
-    DEACTIVATE_STAY("deactivate stay", "^deactivate stay\\s+-name\\s+\"([^\"]+)\"$") {
+    DEACTIVATE_STAY("deactivate stay", "^\\s*deactivate\\s+stay\\s+-name\\s+\"([^\"]+)\"\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -39,7 +39,7 @@ public enum HostMenuCommand implements Command {
             return params;
         }
     },
-    ACTIVATE_STAY("activate stay", "^activate stay\\s+-name\\s+\"([^\"]+)\"$") {
+    ACTIVATE_STAY("activate stay", "^\\s*activate\\s+stay\\s+-name\\s+\"([^\"]+)\"\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -47,13 +47,13 @@ public enum HostMenuCommand implements Command {
             return params;
         }
     },
-    LIST_BOOKING_REQUESTS("list booking requests", "^list booking requests$") {
+    LIST_BOOKING_REQUESTS("list booking requests", "^\\s*list\\s+booking\\s+requests\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             return new HashMap<>();
         }
     },
-    CONFIRM_BOOKING("confirm booking", "^confirm booking\\s+-id\\s+(\\S+)$") {
+    CONFIRM_BOOKING("confirm booking", "^\\s*confirm\\s+booking\\s+-id\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -61,7 +61,7 @@ public enum HostMenuCommand implements Command {
             return params;
         }
     },
-    REJECT_BOOKING("reject booking", "^reject booking\\s+-id\\s+(\\S+)$") {
+    REJECT_BOOKING("reject booking", "^\\s*reject\\s+booking\\s+-id\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();

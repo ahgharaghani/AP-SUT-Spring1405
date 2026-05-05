@@ -17,7 +17,7 @@ public class AppController {
         if (menu == Menu.HOST && !App.isHost()) return "you need to login as a host before accessing the host menu.";
         if (menu == Menu.GUEST && !App.isGuest()) return "you need to login as a guest before accessing the guest menu.";
         App.setCurrentMenu(menu);
-        return "changed menu to: " + menu.getDisplayName();
+        return "changed menu to: " + menu.getDisplayName() + ".";
     }
 
     public static String getCurrentMenu() {
@@ -39,9 +39,10 @@ public class AppController {
             App.setCurrentDate(newDate);
             List<Booking> bookings = Repository.getAllBookings();
             for (Booking booking : bookings) {
-                if (App.getDate().isAfter(booking.getToDate())) booking.setState(BookingState.COMPLETED);
+                if (booking.getState() == BookingState.CONFIRMED && !App.getDate().isBefore(booking.getToDate()))
+                    booking.setState(BookingState.COMPLETED);
             }
-            return "current date is now " + dateString;
+            return "current date is now " + dateString + ".";
         } catch (Exception e) {
             return "invalid date format.";
         }

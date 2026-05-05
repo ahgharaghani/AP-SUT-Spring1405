@@ -6,7 +6,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum GuestMenuCommand implements Command {
-    CHARGE_ACCOUNT("charge account", "^charge account:\\s+\\$(.+)$") {
+    SHOW_BALANCE("show balance", "^\\s*show\\s+balance\\s*$") {
+        @Override
+        public Map<String, String> extractParams(Matcher matcher) {
+            return new HashMap<>();
+        }
+    },
+    CHARGE_ACCOUNT("charge account", "^\\s*charge\\s+account\\s*:\\s+\\$\\s*(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -14,7 +20,7 @@ public enum GuestMenuCommand implements Command {
             return params;
         }
     },
-    REQUEST_BOOKING("request booking", "^request booking\\s+-name\\s+\"([^\"]+)\"\\s+-from\\s+(\\S+)\\s+-to\\s+(\\S+)\\s+-guests\\s+(\\S+)$") {
+    REQUEST_BOOKING("request booking", "^\\s*request\\s+booking\\s+-name\\s+\"([^\"]+)\"\\s+-from\\s+(\\S+)\\s+-to\\s+(\\S+)\\s+-guests\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -25,13 +31,13 @@ public enum GuestMenuCommand implements Command {
             return params;
         }
     },
-    LIST_MY_BOOKINGS("list my bookings", "^list my bookings$") {
+    LIST_MY_BOOKINGS("list my bookings", "^\\s*list\\s+my\\s+bookings\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             return new HashMap<>();
         }
     },
-    CANCEL_BOOKING("cancel booking", "^cancel booking\\s+-id\\s+(\\S+)$") {
+    CANCEL_BOOKING("cancel booking", "^\\s*cancel\\s+booking\\s+-id\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();

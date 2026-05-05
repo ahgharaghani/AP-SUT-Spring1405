@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExploreController {
-    private static ExploreController instance;
-
     private static boolean validateCurrentMenu() {
         return App.getCurrentMenu() == Menu.EXPLORE;
     }
@@ -31,7 +29,7 @@ public class ExploreController {
         List<StaySearchDTO> StaySearchesDTO = new ArrayList<>();
         List<Stay> stays = Repository.getStaysByCity(city);
         for (Stay stay : stays) {
-            if (stay.getCapacity() < guestsNum && !stay.isActive()) continue;
+            if (stay.getCapacity() < guestsNum || !stay.isActive()) continue;
             StaySearchDTO dto = new StaySearchDTO(
                     StaySearchesDTO.size() + 1,
                     stay.getName(),
@@ -60,6 +58,7 @@ public class ExploreController {
                 stay.getCapacity(),
                 stay.getPricePerNight(),
                 stay.getPolicy().getPolicyName(),
+                stay.getBrand(),
                 (stay.isActive()) ? "active" : "inactive"
         );
     }

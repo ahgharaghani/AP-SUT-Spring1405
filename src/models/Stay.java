@@ -13,12 +13,13 @@ public class Stay {
     private int pricePerNight;
     private CancellationPolicy policy;
     private String hostUsername;
+    private String brand;
     private boolean active;
 
     List<Booking> bookings;
 
     public Stay(String name, String city, String address, int capacity,
-                int pricePerNight, CancellationPolicy policy, String hostUsername) {
+                int pricePerNight, CancellationPolicy policy, String hostUsername, String brand) {
         this.name = name;
         this.city = city;
         this.address = address;
@@ -26,12 +27,12 @@ public class Stay {
         this.pricePerNight = pricePerNight;
         this.policy = policy;
         this.hostUsername = hostUsername;
+        this.brand = brand;
         this.active = true;
 
         this.bookings = new ArrayList<>();
     }
 
-    // Getters & Setters
     public String getName() { return name; }
     public String getCity() { return city; }
     public String getAddress() { return address; }
@@ -39,6 +40,7 @@ public class Stay {
     public int getPricePerNight() { return pricePerNight; }
     public CancellationPolicy getPolicy() { return policy; }
     public String getHostUsername() { return hostUsername; }
+    public String getBrand() { return brand; }
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 

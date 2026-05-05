@@ -1,13 +1,14 @@
 package models.enums;
 
+import utils.DateUtils;
+
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 public enum CancellationPolicy {
     FLEXIBLE {
         @Override
         public int calculateRefund(int totalPrice, LocalDate currentDate, LocalDate fromDate) {
-            long daysLeft = ChronoUnit.DAYS.between(currentDate, fromDate);
+            long daysLeft = DateUtils.daysUntil30DayDates(currentDate, fromDate);
             return daysLeft >= 1 ? totalPrice : 0;
         }
 
@@ -20,7 +21,7 @@ public enum CancellationPolicy {
     MODERATE {
         @Override
         public int calculateRefund(int totalPrice, LocalDate currentDate, LocalDate fromDate) {
-            long daysLeft = ChronoUnit.DAYS.between(currentDate, fromDate);
+            long daysLeft = DateUtils.daysUntil30DayDates(currentDate, fromDate);
 
             if (daysLeft >= 3) {
                 return totalPrice;
@@ -39,7 +40,7 @@ public enum CancellationPolicy {
     STRICT {
         @Override
         public int calculateRefund(int totalPrice, LocalDate currentDate, LocalDate fromDate) {
-            long daysLeft = ChronoUnit.DAYS.between(currentDate, fromDate);
+            long daysLeft = DateUtils.daysUntil30DayDates(currentDate, fromDate);
 
             if (daysLeft >= 7) {
                 return (int) (totalPrice * 0.8);
