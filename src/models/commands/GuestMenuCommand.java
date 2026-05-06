@@ -12,7 +12,7 @@ public enum GuestMenuCommand implements Command {
             return new HashMap<>();
         }
     },
-    CHARGE_ACCOUNT("charge account", "^\\s*charge\\s+account\\s*:\\s+\\$\\s*(\\S+)\\s*$") {
+    CHARGE_ACCOUNT("charge account", "^\\s*charge\\s+account\\s*:\\s+\\$\\s*(\\d+(?:\\.\\d{1,2})?)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();

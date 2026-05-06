@@ -2,20 +2,18 @@ package models;
 
 import models.enums.BookingState;
 
-import java.time.LocalDate;
-
 public class Booking {
     private final String id;
     private final String guestUsername;
     private final String stayName;
-    private LocalDate fromDate;
-    private LocalDate toDate;
+    private ThirtyDayDate fromDate;
+    private ThirtyDayDate toDate;
     private int numberOfGuests;
     private BookingState state;
     private int totalPrice;
 
     public Booking(String id, String guestUsername, String stayName,
-                   LocalDate fromDate, LocalDate toDate, int numberOfGuests, int totalPrice) {
+                   ThirtyDayDate fromDate, ThirtyDayDate toDate, int numberOfGuests, int totalPrice) {
         this.id = id;
         this.guestUsername = guestUsername;
         this.stayName = stayName;
@@ -29,8 +27,8 @@ public class Booking {
     public String getId() { return id; }
     public String getGuestUsername() { return guestUsername; }
     public String getStayName() { return stayName; }
-    public LocalDate getFromDate() { return fromDate; }
-    public LocalDate getToDate() { return toDate; }
+    public ThirtyDayDate getFromDate() { return fromDate; }
+    public ThirtyDayDate getToDate() { return toDate; }
     public int getNumberOfGuests() { return numberOfGuests; }
     public BookingState getState() { return state; }
     public void setState(BookingState state) { this.state = state; }

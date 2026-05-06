@@ -3,10 +3,8 @@ package models;
 import models.enums.Menu;
 import models.users.User;
 
-import java.time.LocalDate;
-
 public class App {
-    private static LocalDate currentDate = null;
+    private static ThirtyDayDate currentDate = null;
     private static Menu currentMenu = Menu.MAIN;
     private static User loggedInUser = null;
 
@@ -26,11 +24,11 @@ public class App {
         loggedInUser = user;
     }
 
-    public static void setCurrentDate(LocalDate newDate) {
+    public static void setCurrentDate(ThirtyDayDate newDate) {
         currentDate = newDate;
     }
 
-    public static LocalDate getDate() {
+    public static ThirtyDayDate getDate() {
         return currentDate;
     }
 

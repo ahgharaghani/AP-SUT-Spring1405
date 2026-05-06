@@ -4,7 +4,6 @@ import models.*;
 import models.enums.BookingState;
 import models.enums.Menu;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -26,9 +25,9 @@ public class AppController {
 
     public static String setSystemDate(String dateString) {
         try {
-            LocalDate newDate = LocalDate.parse(dateString, FORMATTER);
+            ThirtyDayDate newDate = ThirtyDayDate.parse(dateString, FORMATTER);
 
-            if (newDate.getDayOfMonth() > 30) {
+            if (newDate == null) {
                 return "invalid date format.";
             }
 

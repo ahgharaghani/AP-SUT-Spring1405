@@ -11,6 +11,7 @@ import models.users.Host;
 import utils.DateUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class HostController {
@@ -129,7 +130,7 @@ public class HostController {
             for (Booking booking : bookings) {
                 if (booking.getState() == BookingState.REQUESTED) {
                     BookingHostDTO dto = new BookingHostDTO(
-                        bookingDTOs.size() + 1,
+                        0,
                         booking.getId(),
                         booking.getStayName(),
                         booking.getGuestUsername(),
@@ -140,6 +141,16 @@ public class HostController {
                     bookingDTOs.add(dto);
                 }
             }
+        }
+
+        bookingDTOs.sort(
+                Comparator.<BookingHostDTO>comparingInt(
+                        dto -> Integer.parseInt(dto.bookingID.split("-")[2])
+                )
+        );
+
+        for (int i = 0; i < bookingDTOs.size(); i++) {
+            bookingDTOs.get(i).number = i + 1;  // Adjust field name if needed
         }
 
         return bookingDTOs;

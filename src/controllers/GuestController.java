@@ -9,10 +9,10 @@ import models.users.Host;
 import utils.BookingIDGenerator;
 import utils.DateUtils;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class GuestController {
@@ -56,10 +56,11 @@ public class GuestController {
         if (stay == null) return "stay not found.";
         if (!stay.isActive()) return "stay is not available.";
 
-        LocalDate parsedFromDate, parsedToDate;
+        ThirtyDayDate parsedFromDate, parsedToDate;
         try {
-            parsedFromDate = LocalDate.parse(fromDate, FORMATTER);
-            parsedToDate = LocalDate.parse(toDate, FORMATTER);
+            parsedFromDate = ThirtyDayDate.parse(fromDate, FORMATTER);
+            parsedToDate = ThirtyDayDate.parse(toDate, FORMATTER);
+            if (parsedFromDate == null || parsedToDate == null) return "invalid date format.";
         } catch (DateTimeParseException e) {
             return "invalid date format.";
         }
@@ -77,7 +78,7 @@ public class GuestController {
 
         if (numGuests > stay.getCapacity()) return "not enough capacity.";
 
-        long totalPrice = DateUtils.daysUntil30DayDates(parsedFromDate, parsedToDate) * stay.getPricePerNight();
+        long totalPrice = DateUtils.daysUntil(parsedFromDate, parsedToDate) * stay.getPricePerNight();
 
         if (guest.getBalance() < totalPrice) return "not enough balance.";
 
@@ -100,12 +101,22 @@ public class GuestController {
 
         for (Booking booking : bookings) {
             BookingGuestDTO dto = new BookingGuestDTO(
-                    bookingDTOs.size() + 1,
+                    0,
                     booking.getId(),
                     booking.getStayName(),
                     booking.getState().getDisplayName()
             );
             bookingDTOs.add(dto);
+        }
+
+        bookingDTOs.sort(
+                Comparator.<BookingGuestDTO>comparingInt(
+                        dto -> Integer.parseInt(dto.bookingId.split("-")[2])
+                )
+        );
+
+        for (int i = 0; i < bookingDTOs.size(); i++) {
+            bookingDTOs.get(i).num = i + 1;
         }
 
         return bookingDTOs;
