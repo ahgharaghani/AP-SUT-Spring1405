@@ -23,164 +23,134 @@ public enum Skill {
     FORTIFY("fortify", 1, TargetSide.ALLY, false) {
         @Override
         public String execute(Knight caster, List<Knight> targets) {
-            Buff buff = new Buff("fortify", true, 0.2, Buff.BuffParameter.DEFENSE);
-
-            return buff.execute(targets);
+            return new Buff("fortify", true, 0.2, Buff.BuffParameter.DEFENSE).execute(targets);
         }
     },
 
     STRIKE_COMMAND("strike command", 5, TargetSide.ENEMY, false) {
         @Override
         public String execute(Knight caster, List<Knight> targets) {
-            Damage damage = new Damage("strike command", true);
-
-            return damage.execute(caster, targets);
+            return new Damage("strike command", true).execute(caster, targets);
         }
     },
 
     ARMOR_BREAK("armor break", 2, TargetSide.ENEMY, false) {
         @Override
         public String execute(Knight caster, List<Knight> targets) {
-            Buff buff = new Buff("armor break", true, -0.15, Buff.BuffParameter.DEFENSE);
-
-            return buff.execute(targets);
+            return new Buff("armor break", true, -0.15, Buff.BuffParameter.DEFENSE).execute(targets);
         }
     },
 
     RALLY("rally", 4, TargetSide.ALLY, false) {
         @Override
         public String execute(Knight caster, List<Knight> targets) {
-            Heal heal = new Heal("rally", true, 0.2);
-
-            return heal.execute(targets);
+            return new Heal("rally", true, 0.2).execute(caster, targets);
         }
     },
 
     SLASH("slash", 2, TargetSide.ENEMY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Damage damage = new Damage("slash", false);
-
-            return damage.execute(caster, target);
+            return new Damage("slash", false).execute(caster, target);
         }
     },
 
     HEAVY_STRIKE("heavy strike", 4, TargetSide.ENEMY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Damage damage = new Damage(this.getName(), false);
-
-            return damage.execute(caster, target);
+            return new Damage(this.getName(), false).execute(caster, target);
         }
     },
 
     LIFE_STEAL("life steal", 3, TargetSide.ENEMY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Damage damage = new Damage(this.getName(), false);
-            Buff buff = new Buff(this.getName(), false, -0.2, Buff.BuffParameter.ATTACK);
-
-            return damage.execute(caster, target) +
-                    "\n" + buff.execute(target);
+            String result = new Damage(this.getName(), false).execute(caster, target);
+//            if (target.getHp() > 0) {
+                result += "\n" + new Buff(this.getName(), false, -0.2, Buff.BuffParameter.ATTACK).execute(target);
+//            }
+            return result;
         }
     },
 
-    BERSERK("berserk", 3, TargetSide.ALLY, false) {
+    BERSERK("berserk", 3, TargetSide.ALLY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Heal heal = new Heal(this.getName(), false, -0.2);
-            Buff buff = new Buff(this.getName(), false, 0.6, Buff.BuffParameter.ATTACK);
-
-            return heal.execute(caster) +
-                    "\n" + buff.execute(caster);
+            String result = new Heal(this.getName(), false, -0.2).execute(caster, target);
+//            if (target.getHp() > 0) {
+                result += "\n" + new Buff(this.getName(), false, 0.6, Buff.BuffParameter.ATTACK).execute(target);
+//            }
+            return result;
         }
     },
 
     FIREBALL("fireball", 2, TargetSide.ENEMY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Damage damage = new Damage(this.getName(), false);
-
-            return damage.execute(caster, target);
+            return new Damage(this.getName(), false).execute(caster, target);
         }
     },
 
     LIGHTNING_STRIKE("lightning strike", 4, TargetSide.ENEMY, false) {
         @Override
         public String execute(Knight caster, List<Knight> targets) {
-            Damage damage = new Damage(this.getName(), true);
-
-            return damage.execute(caster, targets);
+            return new Damage(this.getName(), true).execute(caster, targets);
         }
     },
 
     ICE_BLAST("ice blast", 3, TargetSide.ENEMY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Damage damage = new Damage(this.getName(), false);
+            Damage damage  = new Damage(this.getName(), false);
             Buff buff = new Buff(this.getName(), false, -0.2, Buff.BuffParameter.SPEED);
-
-            return damage.execute(caster, target)
-                    + "\n" + buff.execute(target);
+            return damage.execute(caster, target) + "\n" + buff.execute(target);
         }
     },
 
     ARCANE_SURGE("arcane surge", 3, TargetSide.ALLY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Buff buff = new Buff(this.getName(), false, 0.3, Buff.BuffParameter.MAGIC_ATTACK);
-
-            return buff.execute(target);
+            return new Buff(this.getName(), false, 0.3, Buff.BuffParameter.MAGIC_ATTACK).execute(target);
         }
     },
 
     SILENCE("silence", 4, TargetSide.ENEMY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Stun stun = new Stun(this.getName(), false);
-
-            return stun.execute(target);
+            return new Stun(this.getName(), false).execute(target);
         }
     },
 
     HEAL("heal", 2, TargetSide.ALLY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Heal heal = new Heal(this.getName(), false, 0.4);
-
-            return heal.execute(target);
+            return new Heal(this.getName(), false, 0.4).execute(caster, target);
         }
     },
 
     GROUP_HEAL("group heal", 5, TargetSide.ALLY, false) {
         @Override
         public String execute(Knight caster, List<Knight> targets) {
-            Heal heal = new Heal(this.getName(), true, 0.2);
-
-            return heal.execute(targets);
+            return new Heal(this.getName(), true, 0.2).execute(caster, targets);
         }
     },
 
     REVIVE("revive", 4, TargetSide.ALLY, true) {
         @Override
         public String execute(Knight caster, Knight target) {
-            Heal heal = new Heal(this.getName(), false, 0.1);
-
-            return heal.execute(target);
+            return new Heal(this.getName(), false, 0.1).execute(caster, target);
         }
     },
 
     CLEANSE("cleanse", 3, TargetSide.ALLY, false) {
         @Override
         public String execute(Knight caster, List<Knight> targets) {
-            Buff buff = new Buff(this.getName(), true, 0, null);
-
-            return buff.execute(targets);
+            return new Buff(this.getName(), true, 0, null).execute(targets);
         }
     };
 
     public enum TargetSide {
-        ALLY,ENEMY
+        ALLY, ENEMY
     }
 
     private final String name;
@@ -198,6 +168,7 @@ public enum Skill {
     public String execute(Knight caster, Knight target) {
         throw new UnsupportedOperationException();
     }
+
     public String execute(Knight caster, List<Knight> targets) {
         throw new UnsupportedOperationException();
     }
@@ -229,6 +200,6 @@ public enum Skill {
 
     @Override
     public String toString() {
-        return name().toLowerCase().replaceAll("_", " ");
+        return name;
     }
 }

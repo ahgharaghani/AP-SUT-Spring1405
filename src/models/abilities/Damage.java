@@ -15,31 +15,48 @@ public class Damage extends Ability {
         if (caster.getKnightClass() == KnightClass.MAGE)
             damage = caster.getMagicAttack();
         else if (this.name.equals("heavy strike")) {
-            damage = (int) (caster.getAttack() * 1.5) - (int) (target.getDefense() * 0.3);
+            damage = (int)Math.max (0, Math.floor(caster.getAttack() * 1.5) - Math.floor(target.getDefense() * 0.3));
         } else {
-            damage = caster.getAttack() - (int) (target.getDefense() * 0.3);
+            damage = (int)Math.max(0, caster.getAttack() - Math.floor(target.getDefense() * 0.3));
         }
 
-        if (target.receiveDamageAndGetHP(damage) <= 0) {
-            return target.getStringName() + " is dead!";
+        damage = Math.max(0, damage);
+        target.receiveDamage(damage);
+        caster.addDamageDealt(damage);
+
+        String result = this.name + " dealt " + damage + " damage to " + target.getStringName();
+        if (target.getHp() == 0) {
+            result += "\n" + target.getStringName() + " is dead!";
         }
-        return this.name + " dealt " + damage + " receiveDamageAndGetHP to " + target.getStringName();
+        return result;
     }
 
     @Override
     public String execute(Knight caster, Iterable<Knight> targets) {
         StringBuilder sb = new StringBuilder();
+        boolean first = true;
 
         for (Knight target : targets) {
+            if (!first) sb.append("\n");
+            first = false;
+
             int damage;
-
-            if (caster.getKnightClass() == KnightClass.MAGE)
+            if (caster.getKnightClass() == KnightClass.MAGE) {
                 damage = caster.getMagicAttack();
-            else damage = caster.getAttack() - (int) (target.getDefense() * 0.3);
+            } else {
+                damage = caster.getAttack() - (int)Math.floor(target.getDefense() * 0.3);
+            }
 
+            damage = Math.max(0, damage);
             target.receiveDamage(damage);
-            sb.append(this.name).append(" dealt ").append(damage).append(" receiveDamageAndGetHP to ").append(target.getStringName()).append("\n");
-            if (target.getHp() == 0) sb.append(target.getStringName()).append(" is dead!\n");
+            caster.addDamageDealt(damage);
+
+            sb.append(this.name).append(" dealt ").append(damage)
+                    .append(" damage to ").append(target.getStringName());
+
+            if (target.getHp() == 0) {
+                sb.append("\n").append(target.getStringName()).append(" is dead!");
+            }
         }
 
         return sb.toString();

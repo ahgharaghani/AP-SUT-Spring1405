@@ -27,11 +27,11 @@ public enum MainCommand implements Command {
         }
     },
 
-    PLAY_AGAINST("play against", "^\\s*play\\s+against\\s+(\\S+)(?:\\s+.*)?$") {
+    PLAY_AGAINST("play against", "^\\s*play\\s+against\\s+(?<username>.+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
-            params.put("username", matcher.group(1));
+            params.put("username", matcher.group("username"));
             return params;
         }
     };

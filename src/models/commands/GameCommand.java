@@ -1,13 +1,11 @@
 package models.commands;
 
-import com.sun.beans.editors.StringEditor;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public enum GameCommand implements Command{
+public enum GameCommand implements Command {
     SHOW_TURN("show turn", "^\\s*show\\s+turn\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
@@ -29,7 +27,7 @@ public enum GameCommand implements Command{
         }
     },
 
-    SHOW_STATS("show stats", "^\\s*show\\s+stats\\s+-k\\s+(\\S+)\\s+-u\\s+(\\S+)(?:\\s+.*)?$") {
+    SHOW_STATS("show stats", "^\\s*show\\s+stats\\s+-k\\s+(\\S+)\\s+-u\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
@@ -39,16 +37,16 @@ public enum GameCommand implements Command{
         }
     },
 
-    ATTACK("attack", "^\\s*attack\\s+-k\\s+(\\S+)(?:\\s+.*)?$") {
+    ATTACK("attack", "^\\s*attack\\s+-k\\s+(\\S+)\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
-            params.put("Knight", matcher.group(1));
+            params.put("knight", matcher.group(1));
             return params;
         }
     },
 
-    SKILL("skill", "^\\s*skill\\s+-s\\s+([\\w\\s]+?)(?:\\s+-k\\s+(\\S+))?(?:\\s+.*)?$") {
+    SKILL("skill", "^\\s*skill\\s+-s\\s+(.+?)(?:\\s+-k\\s+(\\S+))?\\s*$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();

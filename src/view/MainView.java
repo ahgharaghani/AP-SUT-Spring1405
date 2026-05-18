@@ -6,7 +6,6 @@ import models.commands.Command;
 import models.commands.MainCommand;
 
 import java.util.List;
-import java.util.Scanner;
 
 public class MainView {
     public static void handleCommand(String query) {
@@ -23,12 +22,11 @@ public class MainView {
                 sb.append("HP: ").append(dto.getHp())
                         .append(" - attack: ").append(dto.getAttack())
                         .append(" - magic attack: ").append(dto.getMagic())
-                        .append(" - defense: ").append(dto.getSpeed())
+                        .append(" - defense: ").append(dto.getDefense())
                         .append(" - speed: ").append(dto.getSpeed()).append("\n");
                 sb.append("skills: ");
                 for (int i = 0; i < dto.getSkills().size(); i++) {
-                    String skillName = dto.getSkills().get(i);
-                    sb.append(skillName.toLowerCase());
+                    sb.append(dto.getSkills().get(i));
                     if (i != dto.getSkills().size() - 1) sb.append(" - ");
                     else sb.append("\n");
                 }
@@ -40,18 +38,20 @@ public class MainView {
         } else if (MainCommand.PLAY_AGAINST.matches(query)) {
             Command.ParsedCommand parsedCommand = MainCommand.PLAY_AGAINST.parse(query);
             String username = parsedCommand.getParam("username");
-            String playAgainstResult = MainController.playAgainst(username);
-            if (playAgainstResult != null) { System.out.println(playAgainstResult); return; }
+            String result = MainController.playAgainst(username);
+            System.out.println(result);
+
+            if (!result.startsWith("you're playing with ")) return;
 
             while (MainController.whoMustChoose() != null) {
                 System.out.println("choosing knight for " + MainController.whoMustChoose() + ":");
-
-                String knightName = AppView.getScanner().nextLine().trim().toLowerCase();
-                String chooseKnightResult = MainController.chooseKnight(knightName, MainController.whoMustChoose());
-                System.out.println(chooseKnightResult);
+                String knightName = AppView.getScanner().nextLine().trim();
+                System.out.println(MainController.chooseKnight(knightName, MainController.whoMustChoose()));
             }
 
             System.out.println("mobarake kheylia");
-        } else System.out.println("invalid command");
+        } else {
+            System.out.println("invalid command");
+        }
     }
 }

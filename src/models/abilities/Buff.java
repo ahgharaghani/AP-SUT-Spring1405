@@ -24,7 +24,7 @@ public class Buff extends Ability {
             case DEFENSE:
                 return "defense";
             case MAGIC_ATTACK:
-                return "magic attack";
+                return "magic";
             case SPEED:
                 return "speed";
             default:
@@ -39,7 +39,7 @@ public class Buff extends Ability {
             return "debuffs removed";
         }
         target.addBuff(this);
-        int amount = (int) Math.abs(modifier * 100);
+        int amount = (int) (Math.abs(modifier * 100));
 
         if (modifier > 0) {
             return target.getStringName() + "'s " + getParameterName() + " buffed by " + amount + "%";

@@ -11,28 +11,33 @@ public class Heal extends Ability {
     }
 
     @Override
-    public String execute(Knight target) {
+    public String execute(Knight caster, Knight target) {
+        int amount = (int)  (Math.abs(modifier * 100));
+
         if (this.name.equals("revive")) {
             if (target.getHp() > 0) return target.getStringName() + " is not dead";
             target.revive(this.modifier);
             return "teammate revived";
         }
 
-        if (target.heal(this.modifier) <= 0) {
+        target.heal(this.modifier);
+
+        if (target.getHp() <= 0) {
             return target.getStringName() + " died!";
         }
 
-        if (this.modifier < 0)
-            return target.getStringName() + " lost " + (int)Math.abs(modifier * 100) + "% HP";
+        if (this.modifier < 0) {
+            return target.getStringName() + " lost " + amount + "% HP";
+        }
 
-        return target.getStringName() + " got healed by " + (int)Math.abs(modifier * 100) + "%";
+        return target.getStringName() + " got healed by " + amount + "%";
     }
 
     @Override
-    public String execute(Iterable<Knight> targets) {
-        for (Knight t : targets) {
-            t.heal(this.modifier);
+    public String execute(Knight caster, Iterable<Knight> targets) {
+        for (Knight target : targets) {
+            target.heal(this.modifier);
         }
-        return "team got healed by " + Math.abs(modifier * 100) + "%";
+        return "team got healed by " + (int) (Math.abs(modifier * 100)) + "%";
     }
 }

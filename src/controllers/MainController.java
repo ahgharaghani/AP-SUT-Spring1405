@@ -13,7 +13,8 @@ import java.util.List;
 public class MainController {
     public static String logout() {
         App.setCurrentPlayer(null);
-        App.setCurrentMenu(Menu.MAIN);
+        App.setCurrentGameSession(null);
+        App.setCurrentMenu(Menu.SIGNUP);
         return "logged out successfully";
     }
 
@@ -22,20 +23,22 @@ public class MainController {
 
         for (KnightName knightName : KnightName.values()) {
             Knight knight = KnightFactory.getKnight(knightName);
-            String name = knightName.getName();
-            String classType = knight.getKnightClass().toString();
-            int hp = knight.getHp();
-            int attack = knight.getAttack();
-            int magic = knight.getMagicAttack();
-            int defense = knight.getDefense();
-            int speed = knight.getSpeed();
             List<String> skills = new ArrayList<>();
             for (Skill skill : knight.getSkills()) {
-                skills.add(skill.toString());
+                skills.add(skill.getName());
             }
 
             knightDTOs.add(
-                    new KnightDTO(name, classType, hp, attack, magic, defense, speed, skills)
+                    new KnightDTO(
+                            knightName.getName(),
+                            knight.getKnightClass().toString(),
+                            knight.getHp(),
+                            knight.getAttack(),
+                            knight.getMagicAttack(),
+                            knight.getDefense(),
+                            knight.getSpeed(),
+                            skills
+                    )
             );
         }
 
@@ -48,18 +51,19 @@ public class MainController {
     }
 
     public static String playAgainst(String username) {
+        username = username.trim();
         User currentUser = App.getCurrentPlayer();
         if (currentUser.getUsername().equals(username)) {
             return "you can't play with yourself";
         }
-        User opp = Repository.getPlayerByUsername(username);
-        if (opp == null) {
+
+        User opponent = Repository.getPlayerByUsername(username);
+        if (opponent == null) {
             return "invalid player name";
         }
 
-        GameSession session = new GameSession(currentUser, opp);
-        App.setCurrentGameSession(session);
-        return null;
+        App.setCurrentGameSession(new GameSession(currentUser, opponent));
+        return "you're playing with " + username;
     }
 
     public static String whoMustChoose() {
@@ -70,11 +74,13 @@ public class MainController {
         GameSession session = App.getCurrentGameSession();
         int whichPlayer = session.usernameIsWhichPlayer(playerName);
         KnightName name = KnightName.fromString(knightName);
+
         if (name == null) return "invalid knight name";
-        if ( (whichPlayer == 1 && session.isFirstPlayerKnightAlreadySelected(name)) ||
-                (whichPlayer == 2 && session.isSecondPlayerKnightAlreadySelected(name))
-        )
+
+        if ((whichPlayer == 1 && session.isFirstPlayerKnightAlreadySelected(name)) ||
+                (whichPlayer == 2 && session.isSecondPlayerKnightAlreadySelected(name))) {
             return "you've already chosen this knight";
+        }
 
         if (whichPlayer == 1) session.addKnightToFirstPlayer(name);
         else session.addKnightToSecondPlayer(name);
@@ -86,5 +92,4 @@ public class MainController {
 
         return "knight selected successfully";
     }
-
 }

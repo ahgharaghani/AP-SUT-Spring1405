@@ -7,32 +7,39 @@ import java.util.Scanner;
 
 public class AppView {
     private static boolean running = true;
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void run() {
         while (running && scanner.hasNextLine()) {
             String query = scanner.nextLine();
+
             if (GlobalCommand.SHOW_CURRENT_MENU.matches(query)) {
-                String result = AppController.getCurrentMenu();
-                System.out.println("current menu: " + result);
+                System.out.println("current menu: " + AppController.getCurrentMenu());
                 continue;
             } else if (GlobalCommand.EXIT.matches(query)) {
                 break;
             }
 
             String currentMenu = AppController.getCurrentMenu();
-            if (currentMenu.equals("main menu")) MainView.handleCommand(query);
-            else if (currentMenu.equals("signup menu")) SignupView.handleCommand(query);
+            if (currentMenu.equals("signup menu")) {
+                SignupView.handleCommand(query);
+            } else if (currentMenu.equals("main menu")) {
+                MainView.handleCommand(query);
+            } else if (currentMenu.equals("game menu")) {
+                GameView.handleCommand(query);
+            } else if (currentMenu.equals("scoreboard menu")) {
+                ScoreboardView.handleCommand(query);
+            }
         }
 
         scanner.close();
     }
 
-    public static void stop() {
-        running = false;
-    }
-
     public static Scanner getScanner() {
         return scanner;
+    }
+
+    public static void stop() {
+        running = false;
     }
 }

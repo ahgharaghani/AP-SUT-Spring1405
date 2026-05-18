@@ -148,7 +148,7 @@ public class Knight {
                 effectiveDefense = (int) (effectiveDefense * (1 + buff.getModifier()));
                 break;
             case SPEED:
-                effectiveSpeed = (int) (effectiveDefense * (1 + buff.getModifier()));
+                effectiveSpeed = (int) (effectiveSpeed * (1 + buff.getModifier()));
                 break;
         }
     }
@@ -162,11 +162,6 @@ public class Knight {
         damage = Math.max(0, damage);
         int actualDamage = Math.min(hp, damage);
         hp -= actualDamage;
-        return actualDamage;
-    }
-
-    public int receiveDamageAndGetHP(int damage) {
-        receiveDamage(damage);
         return hp;
     }
 
@@ -174,7 +169,7 @@ public class Knight {
         int amount = (int) (maxHp * Math.abs(healPercentage));
         if (healPercentage >= 0) hp = Math.min(maxHp, hp + amount);
         else hp = Math.max(0, hp - amount);
-        return hp;
+        return amount;
     }
 
     public int revive(double healModifier) {

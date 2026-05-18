@@ -29,19 +29,13 @@ public interface Command {
     Map<String, String> extractParams(Matcher matcher);
 
     default boolean matches(String input) {
-        if (input == null) {
-            return false;
-        }
-        String trimmed = input.trim().replaceAll("\\s+", " ");
-        return getPattern().matcher(trimmed).matches();
+        if (input == null) return false;
+        return getPattern().matcher(input).matches();
     }
 
     default ParsedCommand parse(String input) {
-        if (input == null) {
-            return null;
-        }
-        String trimmed = input.trim().replaceAll("\\s+", " ");
-        Matcher matcher = getPattern().matcher(trimmed);
+        if (input == null) return null;
+        Matcher matcher = getPattern().matcher(input);
         if (matcher.matches()) {
             return new ParsedCommand(this, extractParams(matcher));
         }

@@ -17,17 +17,7 @@ public class GameSession {
     }
 
     public enum Turn {
-        KNIGHT_1_1(1), KNIGHT_1_2(2), KNIGHT_2_1(1), KNIGHT_2_2(2);
-
-        private final int index;
-
-        Turn(int index) {
-            this.index = index;
-        }
-
-        public int getIndex() {
-            return index;
-        }
+        KNIGHT_1_1, KNIGHT_1_2, KNIGHT_2_1, KNIGHT_2_2;
 
         public Turn next() {
             Turn[] values = values();
@@ -35,12 +25,12 @@ public class GameSession {
         }
     }
 
-    private User firstPlayer;
-    private User secondPlayer;
+    private final User firstPlayer;
+    private final User secondPlayer;
     private Turn whoseTurn;
     private GameState state;
-    private List<Knight> firstPlayerKnights;
-    private List<Knight> secondPlayerKnights;
+    private final List<Knight> firstPlayerKnights;
+    private final List<Knight> secondPlayerKnights;
 
     public GameSession(User firstPlayer, User secondPlayer) {
         this.firstPlayer = firstPlayer;
@@ -51,12 +41,33 @@ public class GameSession {
         this.secondPlayerKnights = new ArrayList<>();
     }
 
-    public Turn getWhoseTurn() { return this.whoseTurn; }
+    public Turn getWhoseTurn() {
+        return this.whoseTurn;
+    }
 
-    private User getFirstPlayer() { return this.firstPlayer; }
-    private User getSecondPlayer() { return this.secondPlayer; }
-    private Knight getFirstPlayerKnight() { return this.firstPlayerKnights.get(whoseTurn.ordinal() % 2); }
-    private Knight getSecondPlayerKnight() { return this.secondPlayerKnights.get(whoseTurn.ordinal() % 2); }
+    public User getFirstPlayer() {
+        return this.firstPlayer;
+    }
+
+    public User getSecondPlayer() {
+        return this.secondPlayer;
+    }
+
+    public List<Knight> getFirstPlayerKnights() {
+        return firstPlayerKnights;
+    }
+
+    public List<Knight> getSecondPlayerKnights() {
+        return secondPlayerKnights;
+    }
+
+    private Knight getFirstPlayerKnight() {
+        return this.firstPlayerKnights.get(whoseTurn.ordinal() % 2);
+    }
+
+    private Knight getSecondPlayerKnight() {
+        return this.secondPlayerKnights.get(whoseTurn.ordinal() % 2);
+    }
 
     public User getCurrentPlayer() {
         if (whoseTurn.ordinal() < 2) return getFirstPlayer();
@@ -90,18 +101,15 @@ public class GameSession {
 
     public List<Knight> getAliveKnights(List<Knight> knights) {
         List<Knight> alive = new ArrayList<>();
-        for (Knight k : knights) {
-            if (k.getHp() > 0) {
-                alive.add(k);
-            }
+        for (Knight knight : knights) {
+            if (knight.getHp() > 0) alive.add(knight);
         }
         return alive;
     }
 
     private boolean isKnightAlreadySelected(KnightName knightName, List<Knight> knights) {
-        List<Knight> toBeChecked = new ArrayList<>(knights);
-        for (Knight k : toBeChecked) {
-            if (k.getName() == knightName) return true;
+        for (Knight knight : knights) {
+            if (knight.getName() == knightName) return true;
         }
         return false;
     }
@@ -125,12 +133,12 @@ public class GameSession {
     public String whoMustChooseKnight() {
         if (state != GameState.PICKING) return null;
         if (firstPlayerKnights.size() < 2) return firstPlayer.getUsername();
-        else return secondPlayer.getUsername();
+        return secondPlayer.getUsername();
     }
 
     public int usernameIsWhichPlayer(String username) {
         if (firstPlayer.getUsername().equals(username)) return 1;
-        else return 2;
+        return 2;
     }
 
     public boolean shallWeBegin() {
@@ -146,15 +154,22 @@ public class GameSession {
     }
 
     public void incrementTurn() {
+        Knight previousKnight = getCurrentPlayerKnight();
+        if (previousKnight.getHp() > 0 && !previousKnight.isStunned()) {
+            previousKnight.incrementAp();
+        }
+
         while (true) {
             whoseTurn = whoseTurn.next();
             Knight currentKnight = getCurrentPlayerKnight();
+
             if (currentKnight.getHp() <= 0) continue;
+
             if (currentKnight.isStunned()) {
                 currentKnight.unstun();
                 continue;
             }
-            currentKnight.incrementAp();
+
             break;
         }
     }
@@ -165,26 +180,30 @@ public class GameSession {
 
     public List<Knight> getKnightsOfUser(String username) {
         if (firstPlayer.getUsername().equals(username)) return firstPlayerKnights;
-        else if (secondPlayer.getUsername().equals(username)) return secondPlayerKnights;
+        if (secondPlayer.getUsername().equals(username)) return secondPlayerKnights;
         return null;
     }
 
     public int anyWinner() {
-        boolean firstTeamAsWinner = true, secondTeamAsWinner = true;
-        for (Knight k : firstPlayerKnights) {
-            if (k.getHp() > 0) {
-                secondTeamAsWinner = false;
+        boolean firstPlayerDead = true;
+        boolean secondPlayerDead = true;
+
+        for (Knight knight : firstPlayerKnights) {
+            if (knight.getHp() > 0) {
+                firstPlayerDead = false;
                 break;
             }
         }
-        for (Knight k : secondPlayerKnights) {
-            if (k.getHp() > 0) {
-                firstTeamAsWinner = false;
+
+        for (Knight knight : secondPlayerKnights) {
+            if (knight.getHp() > 0) {
+                secondPlayerDead = false;
                 break;
             }
         }
-        if (firstTeamAsWinner) return 1;
-        else if (secondTeamAsWinner) return 2;
-        else return 0;
+
+        if (secondPlayerDead) return 1;
+        if (firstPlayerDead) return 2;
+        return 0;
     }
 }
