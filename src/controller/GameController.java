@@ -6,11 +6,9 @@ import dto.RebellionResultDTO;
 import dto.WorkResult;
 import model.App;
 import model.Farm;
+import model.Rule;
 import model.animal.FarmAnimal;
-import model.enums.FarmState;
-import model.enums.IdeologyType;
-import model.enums.RoleType;
-import model.enums.RumorType;
+import model.enums.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,7 +120,7 @@ public class GameController {
         int hours;
         try {
             hours = Integer.parseInt(hoursStr);
-            if (hours <= 0) {
+            if (hours < 0) {
                 currentFarm.incrementTurn();
                 return WorkResult.error("Invalid working hours.");
             }
@@ -145,8 +143,6 @@ public class GameController {
             App.reset();
             return WorkResult.gameOver(currentAnimal.getName(), currentAnimal.getID());
         }
-
-        currentFarm.incrementTurn();
 
         if (outcome == WorkResult.DeathOutcome.DIED_GOVERNOR) {
             currentFarm.incrementTurn();
@@ -440,5 +436,12 @@ public class GameController {
         }
 
         return winner;
+    }
+
+    public static List<String> getRules() {
+        List<Rules> rules = App.getCurrentFarm().getRules();
+        List<String> texts = new ArrayList<>();
+        for (Rules rule : rules) texts.add(rule.getDescription());
+        return texts;
     }
 }

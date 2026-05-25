@@ -210,7 +210,7 @@ public abstract class FarmAnimal {
 
         if (governor != null) {
             double additionImmunityMult;
-            if (ideology.isImmune(target)) {
+            if (ideology != null && ideology.isImmune(governor)) {
                 additionImmunityMult = 1.5;
             } else additionImmunityMult = 1;
 

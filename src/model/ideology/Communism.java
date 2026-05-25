@@ -1,6 +1,7 @@
 package model.ideology;
 
 import model.Farm;
+import model.Rule;
 import model.animal.FarmAnimal;
 import model.enums.AnimalType;
 import model.enums.IdeologyType;
@@ -82,4 +83,7 @@ public class Communism implements Ideology {
 
         return "There is no such rule!";
     }
+
+    @Override
+    public List<Rules> getRules() { return rules; }
 }

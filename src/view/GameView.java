@@ -107,6 +107,11 @@ public class GameView {
             handleEndOfDay();
         } else if (GameCommand.BACK_TO_MAIN_MENU.matches(query)) {
             GameController.backToMainMenu();
+        } else if (GameCommand.SHOW_RULES.matches(query)) {
+            List<String> rules = GameController.getRules();
+            for (int i = 0; i < rules.size(); i++) {
+                System.out.println((i + 1) + ". " + rules.get(i));
+            }
         }
         else System.out.println("Invalid command");
     }
@@ -231,10 +236,10 @@ public class GameView {
 
     private static String parseGovernorsHistory(List<GovernorHistoryDTO> dtos) {
         StringBuilder sb = new StringBuilder();
+        sb.append("------------------\n");
+        sb.append("Governments History\n");
+        sb.append("------------------\n");
         for (GovernorHistoryDTO dto : dtos) {
-            sb.append("------------------\n");
-            sb.append("Governments History\n");
-            sb.append("------------------\n");
             sb.append("ID=").append(dto.id)
                     .append(", Name=").append(dto.name)
                     .append(", Party=").append(dto.ideology)

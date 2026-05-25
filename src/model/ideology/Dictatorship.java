@@ -1,5 +1,6 @@
 package model.ideology;
 
+import model.Rule;
 import model.animal.FarmAnimal;
 import model.enums.AnimalType;
 import model.enums.IdeologyType;
@@ -72,4 +73,7 @@ public class Dictatorship implements Ideology {
 
         return "There is no such rule!";
     }
+
+    @Override
+    public List<Rules> getRules() { return rules; }
 }

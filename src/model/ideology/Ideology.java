@@ -1,7 +1,9 @@
 package model.ideology;
 
+import model.Rule;
 import model.animal.FarmAnimal;
 import model.enums.IdeologyType;
+import model.enums.Rules;
 
 import java.util.List;
 import java.util.Map;
@@ -14,4 +16,5 @@ public interface Ideology {
     boolean isImmune(FarmAnimal target);
     void distributeFood(List<FarmAnimal> aliveAnimals, int distributableFood, int totalWorkHours);
     String changeRule(String newRule, String oldRule, List<FarmAnimal> aliveAnimals);
+    List<Rules> getRules();
 }

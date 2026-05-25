@@ -1,5 +1,6 @@
 package model.ideology;
 
+import model.Rule;
 import model.animal.FarmAnimal;
 import model.enums.IdeologyType;
 import model.enums.Rules;
@@ -29,8 +30,9 @@ public class Democracy implements Ideology {
         return governorVotes.stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
-                .max(Comparator.comparingLong((Map.Entry<Integer, Long> e) -> e.getValue())
-                        .thenComparing(Comparator.comparingInt(Map.Entry<Integer, Long>::getKey).reversed()))
+                .max(Comparator
+                        .comparingLong(Map.Entry<Integer, Long>::getValue)
+                        .thenComparingInt(e -> -e.getKey()))
                 .map(Map.Entry::getKey)
                 .orElse(-1);
     }
@@ -77,4 +79,7 @@ public class Democracy implements Ideology {
 
         return "There is no such rule!";
     }
+
+    @Override
+    public List<Rules> getRules() { return rules; }
 }

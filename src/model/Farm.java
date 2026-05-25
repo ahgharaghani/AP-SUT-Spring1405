@@ -214,22 +214,22 @@ public class Farm {
         int howManyVotes = ideology.castVote(id);
         if (howManyVotes >= getAliveCount()) {
             int governorId = ideology.chooseGovernor();
-            governor = animals.get(governorId - 1);
+            governor = getAliveAnimalByID(governorId);
             governor.setRole(RoleType.GOVERNOR);
             state = FarmState.NORMAL_TURN;
             nextDay();
-            governorRecords.add(new GovernorRecord(governor, IdeologyType.ofString(ideology.name()), day));
+            governorRecords.add(new GovernorRecord(governor, IdeologyType.ofString(ideology.name()), day - 1));
         }
         return true;
     }
 
     public void finalizeGovernor() {
         int governorId = ideology.selectGovernor(animals, systemVotes);
-        governor = animals.get(governorId);
+        governor = getAliveAnimalByID(governorId);
         governor.setRole(RoleType.GOVERNOR);
         state = FarmState.NORMAL_TURN;
         nextDay();
-        governorRecords.add(new GovernorRecord(governor, IdeologyType.ofString(ideology.name()), day));
+        governorRecords.add(new GovernorRecord(governor, IdeologyType.ofString(ideology.name()), day - 1));
     }
 
     public FarmAnimal getGovernor() {
@@ -244,13 +244,13 @@ public class Farm {
     }
 
     public WorkResult.DeathOutcome handleDeath(FarmAnimal dead) {
+        boolean wasGovernor = (dead == governor);
         if (dead == governor) {
             governor = null;
             if (sheriff != null) {
                 sheriff.setRole(RoleType.GOVERNOR);
                 governor = sheriff;
                 sheriff  = null;
-                state = FarmState.CHOOSE_SHERIFF;
             }
         } else if (dead == sheriff) {
             sheriff = null;
@@ -258,7 +258,7 @@ public class Farm {
 
         if (getAliveCount() < 4) return WorkResult.DeathOutcome.GAME_OVER;
 
-        return dead == governor ? WorkResult.DeathOutcome.DIED_GOVERNOR : WorkResult.DeathOutcome.DIED_NORMAL;
+        return wasGovernor ? WorkResult.DeathOutcome.DIED_GOVERNOR : WorkResult.DeathOutcome.DIED_NORMAL;
     }
 
     public void affectPopularityWorkBased(int hours, AnimalType type) {
@@ -304,7 +304,7 @@ public class Farm {
         int distributableFood = rawFood * (100 - tradeRate) / 100;
         int sheriffCut = (int) ((rawFood - distributableFood) * 0.5);
         ideology.distributeFood(getAliveAnimals(), distributableFood, totalDailyWorkHours.get(day));
-        if (sheriff != null) sheriff.feed(sheriffCut);
+        if (tradeRate > 50 && sheriff != null) sheriff.feed(sheriffCut);
     }
 
     public String changeRule(String newRule, String oldRule) {
@@ -331,5 +331,12 @@ public class Farm {
         }
 
         governorRecords.add(new GovernorRecord(newGovernor, newSystemType, day));
+    }
+
+    public List<Rules> getRules() {
+        if (ideology == null) {
+            return Arrays.asList(Rules.values());
+        }
+        return ideology.getRules();
     }
 }
