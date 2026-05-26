@@ -90,6 +90,7 @@ public abstract class FarmAnimal {
     public boolean isAlive() { return alive; }
     public int getFalseRumorsSpread() { return falseRumorsSpread; }
     public int getGovernorships() { return governorships; }
+
     public boolean isLazy() {
         List<Integer> values = new ArrayList<>(hoursWorkedDaily.values());
         int flag = (hasWorkedToday) ? 0 : 1;
@@ -162,7 +163,6 @@ public abstract class FarmAnimal {
     }
 
     public boolean spreadRumor(FarmAnimal target, RumorType rumor) {
-        hasWorkedToday = true;
         if (rumor == RumorType.LAZY) {
             if (target.isLazy()) return true;
             liar = true;

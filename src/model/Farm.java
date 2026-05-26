@@ -26,7 +26,6 @@ public class Farm {
         }
     }
 
-
     private List<FarmAnimal> animals;
     private FarmAnimal governor;
     private FarmAnimal sheriff;
@@ -48,7 +47,7 @@ public class Farm {
         day = 1;
         dayOver = false;
         state = FarmState.NORMAL_TURN;
-        systemVotes = new HashMap<>();
+        systemVotes = new LinkedHashMap<>();
         totalDailyWorkHours = new HashMap<>();
 
         tradeRate = 0;
@@ -69,7 +68,6 @@ public class Farm {
     }
 
     public void incrementTurn() {
-        getCurrentAnimal().setHasWorkedToday(true);
         if (this.turn + 1 > animals.size()) {
             this.turn = 1;
             if (state != FarmState.NORMAL_TURN) return;
@@ -208,7 +206,6 @@ public class Farm {
                 .orElse(null);
     }
 
-    // returns true if id exists, else false
     public boolean castGovernorVote(int id) {
         if (animals.stream().noneMatch(animal -> animal.getID() == id && animal.isAlive())) return false;
         int howManyVotes = ideology.castVote(id);
