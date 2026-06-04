@@ -21,6 +21,10 @@ public class GuitarRig {
     }
 
     public String processRiff(String rawRiff) {
-        return headPedal.effect(channel.processTone(rawRiff));
+        String processed = channel.processTone(rawRiff);
+        if (headPedal != null) {
+            processed = headPedal.effect(processed);
+        }
+        return processed;
     }
 }

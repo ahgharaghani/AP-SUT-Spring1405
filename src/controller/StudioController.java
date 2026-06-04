@@ -44,6 +44,13 @@ public class StudioController {
                 return "[ERROR]: Invalid channel";
         }
 
+        if (pedals == null) {
+            this.rig = rb.build();
+            session.resetAmpHeatMonitor();
+
+            return null;
+        }
+
         for (String pedal : pedals) {
             switch (pedal) {
                 case "DISTORTION":

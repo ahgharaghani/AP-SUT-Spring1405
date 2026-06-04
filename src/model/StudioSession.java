@@ -1,9 +1,7 @@
 package model;
 
 import model.dto.PlayResultDTO;
-import model.observer.BannedRiffObserver;
 import model.observer.StudioObserver;
-import model.observer.TubeAmpHeatMonitor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +28,7 @@ public class StudioSession {
             observer.onPlayEvent(rawRiff, rig.getChannel(), result);
         }
 
-        if (result.isOverheated()) return result;
+        if (result.isOverheated() || result.isBanned()) return result;
 
         String processedRiff = rig.processRiff(rawRiff);
         result.setProcessedRiff(processedRiff);
@@ -49,7 +47,7 @@ public class StudioSession {
 
     public void resetAmpHeatMonitor() {
         for (StudioObserver observer : engineers) {
-            if (observer instanceof TubeAmpHeatMonitor) observer.reset();
+            observer.reset();
         }
     }
 }

@@ -13,7 +13,6 @@ public class PlayResultDTO {
 
     public PlayResultDTO() {
         this.isBanned = false;
-        this.heatLevel = -1;
         this.isOverheated = false;
     }
 

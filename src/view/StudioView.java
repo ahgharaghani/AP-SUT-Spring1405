@@ -17,12 +17,13 @@ public class StudioView {
 
             if (StudioCommand.BUILD_RIG.matches(query)) {
                 String channel = StudioCommand.BUILD_RIG.getParameter("channel");
-                String[] pedals = StudioCommand.BUILD_RIG.getParameter("pedals").split("\\s+");
+                String pedalsStr = StudioCommand.BUILD_RIG.getParameter("pedals");
+                String[] pedals = (pedalsStr == null) ? null : pedalsStr.split("\\s+");
 
                 String result = studioController.buildRig(channel, pedals);
                 if (result != null) System.out.println(result);
             } else if (StudioCommand.SET_CHANNEL.matches(query)) {
-                String channel = StudioCommand.SET_CHANNEL.getParameter(query);
+                String channel = StudioCommand.SET_CHANNEL.getParameter("channel");
 
                 String result = studioController.setChannel(channel);
                 if (result != null) System.out.println(result);
@@ -31,11 +32,11 @@ public class StudioView {
 
                 PlayResultDTO result = studioController.playRiff(riff);
                 handlePlayResult(result);
-            } else if (StudioCommand.EXIT.matches(query)) break;
-
-
-            scanner.close();
+            } else if (StudioCommand.EXIT.matches(query)) {
+                break;
+            } else System.out.println("[ERROR]: Invalid command");
         }
+        scanner.close();
     }
 
     private static void handlePlayResult(PlayResultDTO result) {
@@ -55,7 +56,7 @@ public class StudioView {
             System.out.println("[SYSTEM]: Amp tubes overheated! Studio powering off.");
         }
 
-        if (!result.isBanned()) {
+        if (!result.isBanned() && !result.isOverheated()) {
             System.out.println(result.getProcessedRiff());
         }
     }
