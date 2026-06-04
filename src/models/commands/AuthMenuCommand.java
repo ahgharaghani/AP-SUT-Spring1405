@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum AuthMenuCommand implements Command {
-    CREATE_GUEST("create guest", "^\\s*create\\s+guest\\s+-u\\s+(\\S+)\\s+-p\\s+(\\S+)\\s+-e\\s+(\\S+)\\s*$") {
+    CREATE_GUEST("create guest", "^\\s*create\\s+guest\\s+-u\\s+(\\S+)\\s+-p\\s+(\\S+)\\s+-e\\s+(\\S+)(?:\\s+.*)?$") {
         @Override
         public Map<String, String> extractParams(Matcher matcher) {
             Map<String, String> params = new HashMap<>();
