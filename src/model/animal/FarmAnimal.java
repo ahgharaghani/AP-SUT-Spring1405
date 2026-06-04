@@ -91,20 +91,20 @@ public abstract class FarmAnimal {
     public int getFalseRumorsSpread() { return falseRumorsSpread; }
     public int getGovernorships() { return governorships; }
 
-    public boolean isLazy() {
-        List<Integer> values = new ArrayList<>(hoursWorkedDaily.values());
-        int flag = (hasWorkedToday) ? 0 : 1;
-        int last3DaysWorkingHours = values.subList(values.size() - 3 - flag, values.size() - flag)
-                .stream()
-                .mapToInt(Integer::intValue)
-                .sum();
-        if (last3DaysWorkingHours < 10) {
-            lazy = true;
-            return true;
-        } else {
-            lazy = false;
-            return false;
+    public boolean isLazy(int currentDay) {
+        int day = currentDay;
+        if (!hasWorkedToday || getWorkHoursOnDay(currentDay) == 0) {
+            day = currentDay - 1;
         }
+        int sum = getWorkHoursOnDay(day)
+                + getWorkHoursOnDay(day - 1)
+                + getWorkHoursOnDay(day - 2);
+
+        return sum < 10;
+    }
+
+    private int getWorkHoursOnDay(int day) {
+        return hoursWorkedDaily.getOrDefault(day, 0);
     }
 
     public void setHasWorkedToday(boolean hasWorkedToday) {
@@ -151,7 +151,7 @@ public abstract class FarmAnimal {
     public boolean work(int currentDay, int hours) {
         hasWorkedToday = true;
         hoursWorkedDaily.merge(currentDay, hours, Integer::sum);
-        fullness -= Math.min(hours * hungerRate, fullness);
+        fullness -= Math.min((double) hours * hungerRate, fullness);
         if (fullness == 0) alive = false;
         return alive;
     }
@@ -162,9 +162,9 @@ public abstract class FarmAnimal {
         speciesOpinion.replace(type, Math.min(100, currentPop + addition));
     }
 
-    public boolean spreadRumor(FarmAnimal target, RumorType rumor) {
+    public boolean spreadRumor(FarmAnimal target, RumorType rumor, int currentDay) {
         if (rumor == RumorType.LAZY) {
-            if (target.isLazy()) return true;
+            if (target.isLazy(currentDay)) return true;
             liar = true;
             falseRumorsSpread += 1;
             return false;
@@ -230,7 +230,7 @@ public abstract class FarmAnimal {
 
     public void affectPopularityFalseRumorBased(FarmAnimal spreader, Ideology ideology, RumorType rumor) {
         double lossImmunityMult;
-        if (ideology.isImmune(spreader)) {
+        if (ideology != null && ideology.isImmune(spreader)) {
             lossImmunityMult = 0.5;
         } else lossImmunityMult = 1;
 
@@ -239,10 +239,12 @@ public abstract class FarmAnimal {
         double currentPop = speciesOpinion.get(targetType);
         speciesOpinion.replace(targetType, Math.max(0, currentPop - loss));
 
-        double ideologyLoss = (double) rumor.getBaseEffect();
-        IdeologyType ideologyType = IdeologyType.ofString(ideology.name());
-        double currentIdeologyPop = ideologiesOpinion.get(ideologyType);
-        ideologiesOpinion.replace(ideologyType, Math.max(0, currentIdeologyPop - ideologyLoss));
+        if (ideology != null) {
+            double ideologyLoss = (double) rumor.getBaseEffect();
+            IdeologyType ideologyType = IdeologyType.ofString(ideology.name());
+            double currentIdeologyPop = ideologiesOpinion.get(ideologyType);
+            ideologiesOpinion.replace(ideologyType, Math.max(0, currentIdeologyPop - ideologyLoss));
+        }
     }
 
     public void feed(int foodShare) {

@@ -50,7 +50,7 @@ public class Democracy implements Ideology {
     public void distributeFood(List<FarmAnimal> aliveAnimals, int distributableFood, int totalWorkHours) {
         if (totalWorkHours == 0) return;
         for (FarmAnimal animal : aliveAnimals) {
-            int foodShare = distributableFood * animal.getHoursWorkedLastDay() / totalWorkHours;
+            int foodShare = (int) (distributableFood * (animal.getHoursWorkedLastDay() / (double) totalWorkHours));
             animal.feed(foodShare);
         }
     }

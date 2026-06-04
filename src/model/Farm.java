@@ -68,20 +68,43 @@ public class Farm {
     }
 
     public void incrementTurn() {
-        if (this.turn + 1 > animals.size()) {
-            this.turn = 1;
-            if (state != FarmState.NORMAL_TURN) return;
-            dayOver = true;
-            if (day == 1) state = FarmState.SYSTEM_VOTE;
-            return;
+        boolean dayEnded = false;
+        int checkedCount = 0;
+
+        while (checkedCount < animals.size()) {
+            this.turn++;
+            checkedCount++;
+
+            if (this.turn > animals.size()) {
+                this.turn = 1;
+                if (!dayEnded) {
+                    dayEnded = true;
+                    if (state == FarmState.NORMAL_TURN) {
+                        dayOver = true;
+                        if (day == 1) state = FarmState.SYSTEM_VOTE;
+                    }
+                }
+            }
+
+            FarmAnimal currentAnimal = getCurrentAnimal();
+            if (currentAnimal != null && currentAnimal.isAlive()) return;
         }
-        do {
-            this.turn += 1;
-        } while (!getCurrentAnimal().isAlive());
     }
 
     public FarmAnimal getCurrentAnimal() {
-        return animals.get(turn - 1);
+        try {
+            return animals.get(turn - 1);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private FarmAnimal getAnimalByID(int id) {
+        for (FarmAnimal a : animals) {
+            if (a.getID() == id) return a;
+        }
+
+        return null;
     }
 
     public List<FarmAnimal> getAliveAnimals() {
@@ -102,8 +125,8 @@ public class Farm {
 
     public List<FarmAnimal> getAliveAnimalsByName(String name) {
         List<FarmAnimal> alive = new ArrayList<>();
-        for (FarmAnimal a : animals) {
-            if (a.getName().equals(name)) alive.add(a);
+        for (FarmAnimal a : getAliveAnimals()) {
+            if (a.getName().equals(name) && a.isAlive()) alive.add(a);
         }
 
         return alive;
@@ -116,6 +139,10 @@ public class Farm {
         }
 
         return workers;
+    }
+
+    public void removeAnimalFromFarm(int ID) {
+        animals.remove(getAnimalByID(ID));
     }
 
     public long getAliveCount() {
@@ -134,6 +161,9 @@ public class Farm {
         }
 
         turn = 1;
+        while (!getCurrentAnimal().isAlive()) {
+            turn++;
+        }
         dayOver = false;
         distributeFood();
         allocateDayWorkingHours();
@@ -162,10 +192,14 @@ public class Farm {
         systemVotes.put(getCurrentAnimal().getID(), ideology);
         if (systemVotes.size() == getAliveCount()) {
             finalizeSystem();
-            turn = 1;
+            for (FarmAnimal a : animals) {
+                if (a.isAlive()) { turn = animals.indexOf(a) + 1; break; }
+            }
             return;
         }
-        turn += 1;
+        do {
+            turn += 1;
+        } while (!getCurrentAnimal().isAlive());
     }
 
     private void finalizeSystem() {
@@ -248,12 +282,14 @@ public class Farm {
                 sheriff.setRole(RoleType.GOVERNOR);
                 governor = sheriff;
                 sheriff  = null;
+                governorRecords.add(new GovernorRecord(governor, IdeologyType.ofString(ideology.name()), day));
             }
         } else if (dead == sheriff) {
             sheriff = null;
         }
 
-        if (getAliveCount() < 4) return WorkResult.DeathOutcome.GAME_OVER;
+        if (getAliveCount() < 4) return wasGovernor ?
+                WorkResult.DeathOutcome.GAME_OVER_GOVERNOR : WorkResult.DeathOutcome.GAME_OVER_NORMAL;
 
         return wasGovernor ? WorkResult.DeathOutcome.DIED_GOVERNOR : WorkResult.DeathOutcome.DIED_NORMAL;
     }
@@ -299,7 +335,8 @@ public class Farm {
     public void distributeFood() {
         int rawFood = (int) (totalDailyWorkHours.get(day) * 0.2);
         int distributableFood = rawFood * (100 - tradeRate) / 100;
-        int sheriffCut = (int) ((rawFood - distributableFood) * 0.5);
+        int lostFood = rawFood - distributableFood;
+        int sheriffCut = (int) (lostFood * 0.5);
         ideology.distributeFood(getAliveAnimals(), distributableFood, totalDailyWorkHours.get(day));
         if (tradeRate > 50 && sheriff != null) sheriff.feed(sheriffCut);
     }

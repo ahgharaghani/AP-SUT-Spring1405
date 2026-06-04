@@ -29,35 +29,43 @@ public class GameView {
     }
 
     private static void handleTurn(Scanner scanner) {
-        printWhoPlays();
+
         String query = scanner.nextLine();
+        printWhoPlays();
+
+        if (GameCommand.BACK_TO_MAIN_MENU.matches(query)) {
+            GameController.backToMainMenu();
+            return;
+        }
+        if (GameController.shouldChooseSheriff()) {
+            if (!GameCommand.CHOOSE_SHERIFF.matches(query)) {
+                System.out.println("You have to choose a sheriff today.");
+                return;
+            }
+        }
 
         if (GameCommand.SHOW_ANIMAL_DETAILS.matches(query)) {
-            if (shouldChooseSheriff()) return;
             List<AnimalDetailsDTO> results = GameController.getAnimalDetails();
             String parsedResult = parseAnimalsDetails(results);
 
-            System.out.print(parsedResult);
+            System.out.println(parsedResult);
         } else if (GameCommand.WORK.matches(query)) {
-            if (shouldChooseSheriff()) return;
             String hours = GameCommand.WORK.getParameter("hours");
             WorkResult result = GameController.work(hours);
 
-            if (result.outcome == WorkResult.DeathOutcome.SUCCESS) {
+            if (result.outcome == DeathOutcome.SUCCESS) {
                 System.out.println("The future will be held on your shoulders!");
                 handleEndOfDay();
                 return;
-            } else if (result.outcome == WorkResult.DeathOutcome.ERROR) {
+            } else if (result.outcome == DeathOutcome.ERROR) {
                 System.out.println(result.errorMessage);
                 handleEndOfDay();
                 return;
             }
 
-            System.out.println("The future will be held on your shoulders!");
             handleDeath(result);
             handleEndOfDay();
         } else if (GameCommand.SPREAD_RUMOR.matches(query)) {
-            if (shouldChooseSheriff()) return;
             String id = GameCommand.SPREAD_RUMOR.getParameter("id");
             String type = GameCommand.SPREAD_RUMOR.getParameter("type");
 
@@ -84,7 +92,6 @@ public class GameView {
             System.out.println(result);
             handleEndOfDay();
         } else if (GameCommand.SHOW_GOVERNORS_HISTORY.matches(query)) {
-//            if (shouldChooseSheriff()) return;
             List<GovernorHistoryDTO> results = GameController.getGovernorsHistory();
             if (results == null) {
                 System.out.println("No governors found.");
@@ -92,9 +99,8 @@ public class GameView {
             }
             String parsedResults = parseGovernorsHistory(results);
 
-            System.out.println(parsedResults);
+            System.out.print(parsedResults);
         } else if (GameCommand.REBEL.matches(query)) {
-            if (shouldChooseSheriff()) return;
             String candidate = GameCommand.REBEL.getParameter("candidate");
             String tong = GameCommand.REBEL.getParameter("tong");
 
@@ -105,9 +111,7 @@ public class GameView {
             } else handleRebellionSuccess(result);
 
             handleEndOfDay();
-        } else if (GameCommand.BACK_TO_MAIN_MENU.matches(query)) {
-            GameController.backToMainMenu();
-        } else if (GameCommand.SHOW_RULES.matches(query)) {
+        }  else if (GameCommand.SHOW_RULES.matches(query)) {
             List<String> rules = GameController.getRules();
             for (int i = 0; i < rules.size(); i++) {
                 System.out.println((i + 1) + ". " + rules.get(i));
@@ -183,10 +187,18 @@ public class GameView {
                 System.out.println("All animals are equal...");
                 System.out.println("But " + result.newGovernorName + " (ID: " + result.newGovernorId + ") is now more equal than others.");
                 break;
-            case GAME_OVER:
+            case GAME_OVER_NORMAL:
                 System.out.println("You have died.");
                 System.out.println("Farewell, " + result.deadName + ".");
                 System.out.println("ID: " + result.deadId);
+                System.out.println("Not enough animals to continue the game.");
+                System.out.println("Game over.");
+                break;
+            case GAME_OVER_GOVERNOR:
+                System.out.println("The farm bids you farewell " + result.deadName + ", " + result.deadId);
+                System.out.println("Your rule has ended.");
+                System.out.println("All animals are equal...");
+                System.out.println("But " + result.newGovernorName + " (ID: " + result.newGovernorId + ") is now more equal than others.");
                 System.out.println("Not enough animals to continue the game.");
                 System.out.println("Game over.");
                 break;
@@ -229,7 +241,6 @@ public class GameView {
             sb.append("sheep = ").append(String.format("%.1f", specieOpinions.get("sheep"))).append("\n");
             sb.append("cow = ").append(String.format("%.1f", specieOpinions.get("cow"))).append("\n");
         }
-        sb.append("\n");
 
         return sb.toString();
     }

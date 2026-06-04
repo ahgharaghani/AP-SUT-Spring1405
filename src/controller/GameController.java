@@ -43,7 +43,7 @@ public class GameController {
                             animal.isRebellious(),
                             animal.isLiar(),
                             animal.isCorrupt(),
-                            animal.isLazy(),
+                            animal.isLazy(currentFarm.getDay()),
                             convertOpinionMaps(animal.getIdeologiesOpinion()),
                             convertOpinionMaps(animal.getSpeciesOpinion())
                     )
@@ -139,9 +139,18 @@ public class GameController {
 
         WorkResult.DeathOutcome outcome = currentFarm.handleDeath(currentAnimal);
 
-        if (outcome == WorkResult.DeathOutcome.GAME_OVER) {
+//        currentFarm.removeAnimalFromFarm(currentAnimal.getID());
+
+        if (outcome == WorkResult.DeathOutcome.GAME_OVER_GOVERNOR) {
+            FarmAnimal newGovernor = currentFarm.getGovernor();
             App.reset();
-            return WorkResult.gameOver(currentAnimal.getName(), currentAnimal.getID());
+            return WorkResult.gameOverGovernor(currentAnimal.getName(), currentAnimal.getID(),
+                    newGovernor.getName(), newGovernor.getID());
+        }
+
+        if (outcome == WorkResult.DeathOutcome.GAME_OVER_NORMAL) {
+            App.reset();
+            return WorkResult.gameOverNormal(currentAnimal.getName(), currentAnimal.getID());
         }
 
         if (outcome == WorkResult.DeathOutcome.DIED_GOVERNOR) {
@@ -190,7 +199,7 @@ public class GameController {
             return "Liar rumor just can be spread for Propaganda.";
         }
 
-        boolean result = currentAnimal.spreadRumor(target, rumor);
+        boolean result = currentAnimal.spreadRumor(target, rumor, currentFarm.getDay());
         currentFarm.affectPopularityRumorBased(currentAnimal, target, rumor, result);
 
         currentFarm.incrementTurn();
@@ -217,7 +226,7 @@ public class GameController {
         }
 
         FarmAnimal target = currentFarm.getAliveAnimalByID(targetID);
-        if (target == null)
+        if (target == null || target.getRole() == RoleType.GOVERNOR)
             return "Animal not found.";
 
         currentFarm.setSheriff(target);
@@ -296,6 +305,7 @@ public class GameController {
             return RebellionResultDTO.notAWorker();
         }
 
+
         List<FarmAnimal> candidates = currentFarm.getAliveAnimalsByName(candidateName);
         if (candidates.isEmpty()) {
             currentFarm.incrementTurn();
@@ -314,18 +324,33 @@ public class GameController {
             return RebellionResultDTO.conditionsNotMet();
         }
 
-        if (candidates.size() == 1 && candidates.get(0).getRole() == RoleType.GOVERNOR) {
-            currentFarm.incrementTurn();
-            return RebellionResultDTO.onlyGovernorSuggested();
-        }
-
         List<FarmAnimal> eligibleCandidates = new ArrayList<>();
         for (FarmAnimal candidate : candidates) {
             if (candidate.isCandidacyEligible(tongType, currentAnimal))
                 eligibleCandidates.add(candidate);
         }
 
+        List<RebellionResultDTO.RebelCandidateDTO> candidateDTOs = new ArrayList<>();
+        for (FarmAnimal candidate : eligibleCandidates) {
+            candidateDTOs.add(new RebellionResultDTO.RebelCandidateDTO(candidate));
+        }
+
+//        if (candidates.size() == 1 && candidates.get(0).getRole() == RoleType.GOVERNOR) {
+//            currentFarm.incrementTurn();
+//            return RebellionResultDTO.onlyGovernorSuggested();
+//        }
+
         if (eligibleCandidates.isEmpty()) {
+            FarmAnimal currentGovernor = currentFarm.getGovernor();
+            if (currentGovernor != null
+                    && candidates.contains(currentGovernor)
+                    && candidates.size() == 1
+                    && currentGovernor.getOpinionOf(tongType) >= 50
+                    && currentAnimal.getOpinionOf(currentGovernor.getType()) >= 50) {
+                currentFarm.incrementTurn();
+                return RebellionResultDTO.onlyGovernorSuggested();
+            }
+
             currentFarm.incrementTurn();
             return RebellionResultDTO.noValidCandidate();
         }
@@ -351,10 +376,6 @@ public class GameController {
         currentFarm.applyRebellion(winner, tongType);
         currentFarm.incrementTurn();
 
-        List<RebellionResultDTO.RebelCandidateDTO> candidateDTOs = new ArrayList<>();
-        for (FarmAnimal candidate : eligibleCandidates) {
-            candidateDTOs.add(new RebellionResultDTO.RebelCandidateDTO(candidate));
-        }
 
         List<RebellionResultDTO.RebelVoteResultDTO> voteResultDTOs = new ArrayList<>();
         for (FarmAnimal candidate : eligibleCandidates) {

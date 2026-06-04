@@ -13,7 +13,7 @@ public class RebellionResultDTO {
         public RebelCandidateDTO(FarmAnimal candidate) {
             this.id = candidate.getID();
             this.name = candidate.getName();
-            this.governorships = candidate.getGovernorships() - 1;
+            this.governorships = candidate.getGovernorships();
         }
 
         public int getId()  { return id; }

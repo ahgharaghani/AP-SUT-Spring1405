@@ -6,7 +6,8 @@ public class WorkResult {
         ERROR,
         DIED_NORMAL,
         DIED_GOVERNOR,
-        GAME_OVER,
+        GAME_OVER_GOVERNOR,
+        GAME_OVER_NORMAL,
     }
 
 
@@ -47,7 +48,12 @@ public class WorkResult {
                 deadName, deadId, newGovName, newGovId);
     }
     
-    public static WorkResult gameOver(String deadName, int deadId) {
-        return new WorkResult(DeathOutcome.GAME_OVER, null, deadName, deadId, null, -1);
+    public static WorkResult gameOverGovernor(String deadName, int deadId,
+                                              String newGovName, int newGovId) {
+        return new WorkResult(DeathOutcome.GAME_OVER_GOVERNOR, null, deadName, deadId, newGovName, newGovId);
+    }
+
+    public static WorkResult gameOverNormal(String deadName, int deadId) {
+        return new WorkResult(DeathOutcome.GAME_OVER_NORMAL, null, deadName, deadId, null, -1);
     }
 }

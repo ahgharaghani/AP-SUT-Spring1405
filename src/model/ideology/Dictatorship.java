@@ -50,7 +50,7 @@ public class Dictatorship implements Ideology {
 
     @Override
     public void distributeFood(List<FarmAnimal> aliveAnimals, int distributableFood, int totalWorkHours) {
-        int governorBonus = distributableFood / 4;
+        int governorBonus = (int) (distributableFood / 4.0);
         int individualFoodShare = (distributableFood - governorBonus) / aliveAnimals.size();
 
         for (FarmAnimal animal : aliveAnimals) {
