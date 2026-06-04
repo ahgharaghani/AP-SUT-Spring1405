@@ -10,6 +10,9 @@ public class GameResultDTO {
     private final List<KnightResultDTO> winnerKnights;
     private final List<KnightResultDTO> loserKnights;
 
+    private final boolean success;
+    private final String errorMessage;
+
     public GameResultDTO(String winnerUsername, String loserUsername,
                          int winnerPoints, int loserPoints,
                          List<KnightResultDTO> winnerKnights,
@@ -20,6 +23,19 @@ public class GameResultDTO {
         this.loserPoints = loserPoints;
         this.winnerKnights = winnerKnights;
         this.loserKnights = loserKnights;
+        this.success = true;
+        this.errorMessage = null;
+    }
+
+    public GameResultDTO(String errorMessage) {
+        this.winnerUsername = null;
+        this.loserUsername = null;
+        this.winnerPoints = 0;
+        this.loserPoints = 0;
+        this.winnerKnights = null;
+        this.loserKnights = null;
+        this.success = false;
+        this.errorMessage = errorMessage;
     }
 
     public String getWinnerUsername() { return winnerUsername; }
@@ -28,6 +44,8 @@ public class GameResultDTO {
     public int getLoserPoints() { return loserPoints; }
     public List<KnightResultDTO> getWinnerKnights() { return winnerKnights; }
     public List<KnightResultDTO> getLoserKnights() { return loserKnights; }
+    public String getErrorMessage() { return errorMessage; }
+    public boolean isSuccess() { return success; }
 
     public static class KnightResultDTO {
         private final String ownerUsername;

@@ -21,13 +21,17 @@ public class GameView {
             ));
         } else if (GameCommand.ATTACK.matches(query)) {
             Command.ParsedCommand parsed = GameCommand.ATTACK.parse(query);
-            System.out.println(GameController.attack(parsed.getParam("knight")));
+            Object result = GameController.attack(parsed.getParam("knight"));
+                System.out.println(formatGameResult(result));
+                System.out.println(result);
+
         } else if (GameCommand.SKILL.matches(query)) {
             Command.ParsedCommand parsed = GameCommand.SKILL.parse(query);
-            System.out.println(GameController.skill(
+            Object result = GameController.skill(
                     parsed.getParam("skill"),
                     parsed.getParam("knight")
-            ));
+            );
+                System.out.println(formatGameResult(result);
         } else {
             System.out.println("invalid command");
         }

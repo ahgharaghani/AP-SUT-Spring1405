@@ -101,7 +101,7 @@ public class GameController {
                 " - speed: " + knight.getSpeed();
     }
 
-    public static String attack(String knightNameStr) {
+    public static GameResultDTO attack(String knightNameStr) {
         GameSession session = App.getCurrentGameSession();
         Knight currentKnight = session.getCurrentPlayerKnight();
         Knight teammate = session.getTeammate();
@@ -110,9 +110,9 @@ public class GameController {
                 .anyMatch(k -> k.getStringName().equalsIgnoreCase(knightNameStr));
 
         if (!enemyHasKnight && currentKnight.getStringName().equalsIgnoreCase(knightNameStr))
-            return "you can't attack yourself";
+            return new GameResultDTO("you can't attack yourself");
         if (!enemyHasKnight && teammate.getStringName().equalsIgnoreCase(knightNameStr))
-            return "you can't attack your own teammate";
+            return new GameResultDTO("you can't attack your own teammate");
 
         Knight target = session.getEnemyKnights().stream()
                 .filter(k -> k.getHp() > 0 && k.getStringName().equalsIgnoreCase(knightNameStr))
@@ -120,7 +120,7 @@ public class GameController {
                 .orElse(null);
 
         if (target == null)
-            return "enemy doesn't exist";
+            return new GameResultDTO("enemy doesn't exist");
 
         boolean willDodge = false;
         KnightClass currentClass = currentKnight.getKnightClass();
@@ -133,8 +133,8 @@ public class GameController {
 
         if (willDodge) {
             session.incrementTurn();
-            return "shokhosh enemy dodge dad\n" +
-                    session.getCurrentPlayerKnight().getStringName() + " is playing...";
+            return new GameResultDTO("shokhosh enemy dodge dad\n" +
+                    session.getCurrentPlayerKnight().getStringName() + " is playing...");
         }
 
         int damage = Math.max(
@@ -163,7 +163,7 @@ public class GameController {
         return result.toString();
     }
 
-    public static String skill(String skillName, String knightName) {
+    public static GameResultDTO skill(String skillName, String knightName) {
         GameSession session = App.getCurrentGameSession();
         Knight caster = session.getCurrentPlayerKnight();
 
